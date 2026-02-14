@@ -4,6 +4,8 @@
 
 This repository Wrap  the POAFF project and it dependencies to create a doker image to ease the use of this tool in automated environments.
 
+The image is pushed to `dprslt/poaff`
+
 ## Quick Start with Docker
 
 ### Prerequisites
@@ -13,25 +15,20 @@ This repository Wrap  the POAFF project and it dependencies to create a doker im
 
 ### Basic Usage
 
-1. **Build the Docker image**:
-   ```bash
-   docker build -t poaff .
-   ```
-
-2. **Prepare input data**:
+1. **Prepare input data**:
    - Download SIA airspace data from [SIA website](https://www.sia.aviation-civile.gouv.fr/produits-numeriques-en-libre-disposition/les-bases-de-donnees-sia.html)
    - Place the zip file in a dedicated input directory
 
-3. **Run the processing**:
+2. **Run the processing**:
 
    ```bash
    docker run --rm \
      -v /path/to/input:/tmp/input:ro \
      -v /path/to/output:/app/poaff_bpa/output \
-     poaff
+     dprslt/poaff
 
 
-4. **Access results**:
+3. **Access results**:
    - Generated files will be available in your output directory
    - Includes airspace boundaries, frequency data, and various format exports
 
