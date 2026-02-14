@@ -4,7 +4,9 @@
 
 This repository Wrap  the POAFF project and it dependencies to create a doker image to ease the use of this tool in automated environments.
 
-The image is pushed to `dprslt/poaff`
+The image is pushed to `dprslt/poaff`.
+
+This repo currently only support the SIA AIXM4.5 files workflow.
 
 ## Quick Start with Docker
 
