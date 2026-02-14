@@ -1,0 +1,15 @@
+lib/
+bin/
+include/
+poaff_bpa/input/SIA
+poaff_bpa/output/
+venv/
+*.zip
+Thumbs.db
+*.png
+*.geojson
+airpsace-git-archive/
+export_xml_bd_sia_2026-02-19-v02.zip
+geojson-french-0125.png
+geojson-french-0624.png
+20240615_ff-FrenchAll.geojson

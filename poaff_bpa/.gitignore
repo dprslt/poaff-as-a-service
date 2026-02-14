@@ -1,0 +1,29 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Spyder project settings
+.spyproject/
+
+# Local resources
+output/
+input/BPa
+input/dataGouv-fr
+input/DIRCAM
+input/EuCtrl
+input/FFVL
+input/FFVP
+input/INNPM
+input/LPO_Biodiv
+input/OpenAIP
+input/Parcs
+input/SIA
+input/SpotAir
+input/STAC
+input/Tests/KML-tests
+input/ZSMs
+
+.venv/
+venv/
+.DS_Store

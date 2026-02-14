@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AIXM-Snapshot created="2020-03-18T17:50:01.141+01:00" origin="Sia-France" version="4.5" effective="2019-12-05T00:00:00.000+01:00">
+<Obs>
+ <ObsUid mid="1577198">
+  <geoLat>
+   462948.12N
+  </geoLat>
+  <geoLong>
+   0004632.00W
+  </geoLong>
+ </ObsUid>
+ <txtName>
+  85006
+ </txtName>
+ <txtDescrType>
+  Pylône
+ </txtDescrType>
+ <codeGroup>
+  N
+ </codeGroup>
+ <codeLgt>
+  N
+ </codeLgt>
+ <codeDatum>
+  U
+ </codeDatum>
+ <valElev>
+  469
+ </valElev>
+ <valHgt>
+  207
+ </valHgt>
+ <uomDistVer>
+  FT
+ </uomDistVer>
+</Obs>
+<Obs>
+ <ObsUid mid="1577950">
+  <geoLat>
+   482936.00N
+  </geoLat>
+  <geoLong>
+   0015526.00W
+  </geoLong>
+ </ObsUid>
+ <txtName>
+  22033
+ </txtName>
+ <txtDescrType>
+  Pylône
+ </txtDescrType>
+ <codeGroup>
+  N
+ </codeGroup>
+ <codeLgt>
+  N
+ </codeLgt>
+ <codeDatum>
+  U
+ </codeDatum>
+ <valElev>
+  318
+ </valElev>
+ <valHgt>
+  167
+ </valHgt>
+ <uomDistVer>
+  FT
+ </uomDistVer>
+</Obs>
+</AIXM-Snapshot>

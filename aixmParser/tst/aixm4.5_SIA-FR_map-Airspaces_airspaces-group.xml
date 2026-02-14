@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AIXM-Snapshot created="2020-03-18T17:50:01.141+01:00" origin="Sia-France" version="4.5" effective="2019-12-05T00:00:00.000+01:00">
+<Adg>
+ <AdgUid>
+  <AseUid mid="1560463">
+   <codeType>
+    TMA
+   </codeType>
+   <codeId>
+    LFRH
+   </codeId>
+  </AseUid>
+ </AdgUid>
+ <AseUidBase mid="1564419">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFRH1
+  </codeId>
+ </AseUidBase>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1564399">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFRH2
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1564395">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFRH3
+  </codeId>
+ </AseUidComponent>
+</Adg>
+<Adg>
+ <AdgUid mid="1566725">
+  <AseUid mid="1560937">
+   <codeType>
+    TMA
+   </codeType>
+   <codeId>
+    LFLC2.20
+   </codeId>
+  </AseUid>
+ </AdgUid>
+ <AseUidSameExtent mid="1560933">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC2
+  </codeId>
+ </AseUidSameExtent>
+</Adg>
+<Adg>
+ <AdgUid mid="1566905">
+  <AseUid mid="1561901">
+   <codeType>
+    TMA
+   </codeType>
+   <codeId>
+    LFLC2.30
+   </codeId>
+  </AseUid>
+ </AdgUid>
+ <AseUidSameExtent mid="1560933">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC2
+  </codeId>
+ </AseUidSameExtent>
+</Adg>
+<Adg>
+ <AdgUid>
+  <AseUid mid="1560659">
+   <codeType>
+    TMA
+   </codeType>
+   <codeId>
+    LFLC
+   </codeId>
+  </AseUid>
+ </AdgUid>
+ <AseUidBase mid="1561891">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC1
+  </codeId>
+ </AseUidBase>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1560933">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC2
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1563975">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC2.1
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1563995">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC2.2
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1563983">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC2.3
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1560953">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC3
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1560957">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC4
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1563951">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC4.1
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1563939">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC4.2
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1560969">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC5
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1563967">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC5.1
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1560963">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC6
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1565365">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC7
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="25091035">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC8
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1564313">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC9
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1560941">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFCL10
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1564301">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFCL11
+  </codeId>
+ </AseUidComponent>
+ <codeOpr>
+  UNION
+ </codeOpr>
+ <AseUidComponent mid="1564311">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFCL12
+  </codeId>
+ </AseUidComponent>
+</Adg>
+<Adg>
+ <AdgUid mid="7530055">
+  <AseUid mid="7530053">
+   <codeType>
+    TMA
+   </codeType>
+   <codeId>
+    TMA16162F.
+   </codeId>
+  </AseUid>
+ </AdgUid>
+ <AseUidSameExtent mid="1560989">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   TMA16162
+  </codeId>
+ </AseUidSameExtent>
+</Adg>
+</AIXM-Snapshot>

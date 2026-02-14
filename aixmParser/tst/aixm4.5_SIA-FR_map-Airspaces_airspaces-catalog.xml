@@ -1,0 +1,2721 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AIXM-Snapshot created="2020-03-18T17:50:01.141+01:00" origin="Sia-France" version="4.5" effective="2019-12-05T00:00:00.000+01:00">
+<Ase>
+ <AseUid mid="1561071">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLL01
+  </codeId>
+ </AseUid>
+ <txtName>
+  LYON 01
+ </txtName>
+ <codeClass>
+  C
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  4500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  2500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Airspace defined excluding :#- LF-R 194 B LA VALBONNE, LF-R 3200 A and LF-R 3201 A when active.#- LF-P 9 BUGEY (entry prohibited, exemption : see AIP ENR 5.1 paragraph 1.2.1)
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1560775">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFPT
+  </codeId>
+ </AseUid>
+ <txtName>
+  PONTOISE
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  2500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  1500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   TIMSH
+  </codeWorkHr>
+  <Timsh>
+   <codeTimeRef>
+    UTCW
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    LH
+   </codeDay>
+   <codeDayTil>
+    LH
+   </codeDayTil>
+   <timeWef>
+    07:00
+   </timeWef>
+   <timeTil>
+    22:00
+   </timeTil>
+  </Timsh>
+  <Timsh>
+   <codeTimeRef>
+    UTCW
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    MON
+   </codeDay>
+   <codeDayTil>
+    SAT
+   </codeDayTil>
+   <timeWef>
+    05:00
+   </timeWef>
+   <timeTil>
+    22:00
+   </timeTil>
+  </Timsh>
+  <Timsh>
+   <codeTimeRef>
+    UTCW
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    SUN
+   </codeDay>
+   <codeDayTil>
+    SUN
+   </codeDayTil>
+   <timeWef>
+    07:00
+   </timeWef>
+   <timeTil>
+    22:00
+   </timeTil>
+  </Timsh>
+  <txtRmkWorkHr>
+   MON : 0500-2359#TUE : 0000 to FRI 2359#SAT : 0000-2200#SUN, HOL : 0700-2200#SUM-1HR
+  </txtRmkWorkHr>
+ </Att>
+</Ase>
+<Ase>
+ <AseUid mid="25091580">
+  <codeType>
+   RAS
+  </codeType>
+  <codeId>
+   LFSTMZ001
+  </codeId>
+ </AseUid>
+ <txtLocalType>
+  TMZ
+ </txtLocalType>
+ <txtName>
+  SARREBRUCK / (source utf-8) Tests de translation d'accents: à-é-è-î-ô-û
+ </txtName>
+ <codeClass>
+  E
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  65
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  2500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <txtRmk>
+  0500-2130#
+SUM : - 1HR#
+Excluding the French part of SARREBRUCK CTR.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1562731">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   NWWW2
+  </codeId>
+ </AseUid>
+ <txtName>
+  NOUMEA 2
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  6500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+</Ase>
+<Ase>
+ <AseUid mid="29598414">
+  <codeType>
+   D-OTHER
+  </codeType>
+  <codeId>
+   TFVFR01FIS
+  </codeId>
+ </AseUid>
+ <txtLocalType>
+  SIV
+ </txtLocalType>
+ <txtName>
+  POINTE A PITRE
+ </txtName>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  2500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Except for limits of CTR POINTE A PITRE.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1562881">
+  <codeType>
+   D-OTHER
+  </codeType>
+  <codeId>
+   LFV391PJE
+  </codeId>
+ </AseUid>
+ <txtLocalType>
+  PJE
+ </txtLocalType>
+ <txtName>
+  391
+ </txtName>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  140
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   SR-SS+30.
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  BLW FL 115: Actual activity on CLERMONT APP and CAHORS A/A.#
+ABV FL 115: Actual activity on TOULOUSE APP.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="mid-Test1">
+  <codeType>
+   Q
+  </codeType>
+  <codeId>
+   Test1
+  </codeId>
+ </AseUid>
+ <txtName>
+  Test1
+ </txtName>
+ <codeActivity>
+  BALLOON
+ </codeActivity>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  3000
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  1000
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <txtRmk>
+  Administrator and NOTAM requester : Flights director (TEL published in the activation NOTAM).#
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="mid-Test2">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   Test2
+  </codeId>
+ </AseUid>
+ <txtName>
+  Test2
+ </txtName>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  3000
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator: NIL.#Avoidance mandatory except for exemption granted by the prefect of la Manche, after West DSAC consultation.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="mid-Test3">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   Test3
+  </codeId>
+ </AseUid>
+ <txtName>
+  Test3
+ </txtName>
+ <codeDistVerUpper>
+  HEI
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  3000
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  1000
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator: NIL.#Avoidance mandatory except for exemption granted by the prefect of la Manche, after West DSAC consultation.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="mid-Test4">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   Test4
+  </codeId>
+ </AseUid>
+ <txtName>
+  Test4
+ </txtName>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  2500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  2450
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator: NIL.#Avoidance mandatory except for exemption granted by the prefect of la Manche, after West DSAC consultation.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="mid-Test5">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   Test5
+  </codeId>
+ </AseUid>
+ <txtName>
+  Test5
+ </txtName>
+ <codeDistVerUpper>
+  HEI
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  3000
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  1500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator: NIL.#Avoidance mandatory except for exemption granted by the prefect of la Manche, after West DSAC consultation.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1613148-tst">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   LFR506A
+  </codeId>
+ </AseUid>
+ <txtName>
+  506 A
+ </txtName>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  115
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Possible activation H24 except SUN and public HOL
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator : camp de Coëtquidan#
+TEL : 02 97 70 73 85#
+Except for LF-R 239 COETQUIDAN SUD when active.#
+Sauf SAM, DIM et JF#
+OAT/GAT: Avoidance mandatory throughout activity, except for ACFT flying for Coëtquidan camp.#
+Activity known on :#
+-ARMOR (CCMAR) : 124.725 MHz#
+-RAKI INFO : 317.5 MHz, 143.550 MHz#
+- RENNES APP/INFO : 134.0 MHz
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1613148-1">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   LFR506A
+  </codeId>
+ </AseUid>
+ <txtName>
+  506 A
+ </txtName>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  3500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Possible activation H24 except SUN and public HOL
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator : camp de Coëtquidan#
+TEL : 02 97 70 73 85#
+Except for LF-R 239 COETQUIDAN SUD when active.#
+Sauf SAM, DIM et JF#
+OAT/GAT: Avoidance mandatory throughout activity, except for ACFT flying for Coëtquidan camp.#
+Activity known on :#
+-ARMOR (CCMAR) : 124.725 MHz#
+-RAKI INFO : 317.5 MHz, 143.550 MHz#
+- RENNES APP/INFO : 134.0 MHz
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1613148-2">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   LFR506A
+  </codeId>
+ </AseUid>
+ <txtName>
+  506 A
+ </txtName>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  75
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  3500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Possible activation H24 except public HOL
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator : camp de Coëtquidan#
+TEL : 02 97 70 73 85#
+Except for LF-R 239 COETQUIDAN SUD when active.#
+OAT/GAT: Avoidance mandatory throughout activity, except for ACFT flying for Coëtquidan camp.#
+Activity known on :#
+-ARMOR (CCMAR) : 124.725 MHz#
+-RAKI INFO : 317.5 MHz, 143.550 MHz#
+- RENNES APP/INFO : 134.0 MHz
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="17782506">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   LFR239
+  </codeId>
+ </AseUid>
+ <txtName>
+  239
+ </txtName>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  5000
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Possible activation H24 by NOTAM PN 24 HR. According to protocol. Sauf SAM, DIM
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator and NOTAM requester : Flights director (TEL published in the activation NOTAM).#
+GAT/OAT : avoidance mandatory except for aircraft carrying out assistance, rescue or public safety missions, when avoidance is not compatible with the proper execution of these missions, upon flights director's authorisation.#
+Lighting by day :#
+- of the cable by fluorescent red flags every 50 m ; #
+- of the hot air balloon by high intensity flashing lights (1 white, 1 red)#
+Lighting by night of the hot air balloon :#
+- by high intensity flashing lights (1 white, 1 red)#
+- by a DCA spotlight of 1° aperture beam, white coloured.#
+Detection/Identification :#
+- RADAR reflector, transponder 3/A and C (distress code : 7700 in case of cable rupture)#
+Activity known on :#
+- RENNES INFO : 134.000 MHz#
+- ARMOR : 124.725 MHz
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="13555652">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   LFR278
+  </codeId>
+ </AseUid>
+ <txtName>
+  278
+ </txtName>
+ <codeDistVerUpper>
+  HEI
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  2500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator : VANNES MEUCON AD operator.#
+Defined except for the interfering part of the LF-R 94 A MEUCON, when active.#
+Radio contact mandatory with VANNES INFO or A/A if no AFIS.#
+Users' information on :#
+- VANNES INFO#
+- NANTES INFO
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="13555690">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   LFR279
+  </codeId>
+ </AseUid>
+ <txtName>
+  279
+ </txtName>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  145
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  2500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Possible activation :#
+0800-2000.#
+SUM : - 1 HR
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator : VANNES MEUCON AD operator.#
+Airspace defined except for the interfering LF-R 94 A and B MEUCON areas, when active.#
+Avoidance mandatory during activity, except for :#
+- ACFT departing from or arriving at VANNES MEUCON AD,#
+- ACFT dropping parachutists,#
+- ACFT conducting assistance, rescue or public safety missions, when they can't avoid the area.#
+Users' information :#
+- VANNES INFO#
+- NANTES INFO/APP#
+- BREST ACC
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1560463">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFRH
+  </codeId>
+ </AseUid>
+ <txtName>
+  LORIENT
+ </txtName>
+</Ase>
+<Ase>
+ <AseUid mid="1564419">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFRH1
+  </codeId>
+ </AseUid>
+ <txtName>
+  LORIENT 1
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  2500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Activable H24#Possible activation H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  OAT/GAT procedures.#Deactivation of TMA announced by RAI frequency 123.0 or by IROISE INFO.#Except for LF-R 14, LF-R 13 A1, LF-R 13 A2, LF-R 13 B1, LF-R 13 B2, LF-R 13 C and LF-R 94 when active.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1564399">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFRH2
+  </codeId>
+ </AseUid>
+ <txtName>
+  LORIENT 2
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  2500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Activable H24#Possible activation H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  OAT/GAT procedures.#Deactivation of TMA announced by RAI frequency 123.0 by BREST ACC/FIC or by IRROISE APP.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1564395">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFRH3
+  </codeId>
+ </AseUid>
+ <txtName>
+  LORIENT 3 (test)
+ </txtName>
+ <codeClass>
+  E
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  125
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  STD
+ </codeDistVerLower>
+ <valDistVerLower>
+  115
+ </valDistVerLower>
+ <uomDistVerLower>
+  FL
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HO
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Activable H24#Possible activation H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  OAT/GAT procedures.#Deactivation of TMA announced by RAI frequency 123.0 or  by BREST ACC/FIC.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1564417">
+  <codeType>
+   CTR
+  </codeType>
+  <codeId>
+   LFRH
+  </codeId>
+ </AseUid>
+ <txtName>
+  LORIENT
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  2500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Possible activation H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  OAT/GAT procedures.#CTR deactivation announced on RAI 123.0 or IROISE INFO 119.575#Except for LF- R 14, LF- R 13 A1, LF-R 13 A2 and LF-R 13 B1 when active.#Flying over LORIENT AD prohibited BLW 1000ft ASFC.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1562265">
+  <codeType>
+   D
+  </codeType>
+  <codeId>
+   LFD214
+  </codeId>
+ </AseUid>
+ <txtName>
+  214
+ </txtName>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   MON, FRI : H24.#
+Other hours : announced by NOTAM.
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator CCMAR ATLANTIQUE (ARMOR) 124.725 MHz.#
+Airspace defined except for LORIENT TMA when active.#
+IFR flights following QPR-STG axis : entry permitted, follow BREST ACC/FIC instructions.#
+Activity known on :#
+- BREST ACC/FIC/UAC 125.5 - 134.2 MHz#
+- LANN BIHOUE APP 123.0 MHz
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1566591">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   LFR15A
+  </codeId>
+ </AseUid>
+ <txtName>
+  15 A
+ </txtName>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  85
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <Timsh>
+   <codeTimeRef>
+    UTC
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    ANY
+   </codeDay>
+   <codeEventWef>
+    SR
+   </codeEventWef>
+   <timeRelEventWef>
+    30
+   </timeRelEventWef>
+   <codeCombWef>
+    E
+   </codeCombWef>
+   <codeEventTil>
+    SS
+   </codeEventTil>
+   <timeRelEventTil>
+    30
+   </timeRelEventTil>
+   <codeCombTil>
+    L
+   </codeCombTil>
+  </Timsh>
+  <txtRmkWorkHr>
+   Possible activation : SR-30 to SS+30
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Avoidance mandatory during activity except for ACFT to and from Brienne le Château AD, helicopter to and from Blignicourt heliport and aircraft for air dropping after radio contact on 123.425 MHz.#Activation known on:# PARIS INFO: 126.1 MHz# SEINE INFO: 120.325 MHz#SAINT DIZIER APP: 134.775#PARIS ACC : 120.950 MHz.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1566593">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   LFR15B
+  </codeId>
+ </AseUid>
+ <txtName>
+  15 B
+ </txtName>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  STD
+ </codeDistVerLower>
+ <valDistVerLower>
+  85
+ </valDistVerLower>
+ <uomDistVerLower>
+  FL
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <Timsh>
+   <codeTimeRef>
+    UTC
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    ANY
+   </codeDay>
+   <codeEventWef>
+    SR
+   </codeEventWef>
+   <timeRelEventWef>
+    30
+   </timeRelEventWef>
+   <codeCombWef>
+    E
+   </codeCombWef>
+   <codeEventTil>
+    SS
+   </codeEventTil>
+   <timeRelEventTil>
+    30
+   </timeRelEventTil>
+   <codeCombTil>
+    L
+   </codeCombTil>
+  </Timsh>
+  <txtRmkWorkHr>
+   Possible activation :SR-30 to SS+30
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Avoidance mandatory during activity except for ACFT to and from Brienne le Château AD and aircraft for air dropping after radio contact on 123.425 MHz.#Activation known on:#PARIS INFO: 126.1 MHz# SEINE INFO: 120.325 MHz#SAINT DIZIER APP: 134.775 MHz# PARIS ACC: 120.950 MHz
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1563013">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   LFR164A2
+  </codeId>
+ </AseUid>
+ <txtName>
+  164 A2
+ </txtName>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  6500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Possible activation#MON-THU except HOL:#0800-2300#FRI except HOL:#0800-1700#SUM: - 1HR
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Except for Alsace LF- R 152 when active.#Administrator : OCHEY INFO 130.275 or 03 83 52 64 46.#GAT IFR/VFR : Authorised after radio contact, follow instructions.#Activity known on OCHEY INFO or RAI 130.275.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="400002196660360">
+  <codeType>
+   PART
+  </codeType>
+  <codeId>
+   LISFRAM01A
+  </codeId>
+ </AseUid>
+ <txtLocalType>
+  FRA
+ </txtLocalType>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  100
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  STD
+ </codeDistVerLower>
+ <valDistVerLower>
+  50
+ </valDistVerLower>
+ <uomDistVerLower>
+  FL
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+ </Att>
+</Ase>
+<Ase>
+ <AseUid mid="1560895">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFOB1
+  </codeId>
+ </AseUid>
+ <txtName>
+  BEAUVAIS 1
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  2500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  1500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HO
+  </codeWorkHr>
+  <Timsh>
+   <codeTimeRef>
+    UTCW
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    ANY
+   </codeDay>
+   <codeDayTil>
+    ANY
+   </codeDayTil>
+   <timeWef>
+    06:15
+   </timeWef>
+   <timeTil>
+    22:00
+   </timeTil>
+  </Timsh>
+  <txtRmkWorkHr>
+   WIN : 0615-2200, SUM : -1HR#Extension for all scheduled commercial flights.#Extension pour tout vol commercial programmé.
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Activation known on BEAUVAIS APP or  ATIS 118.375MHz and phone number 03 44 11 49 28.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1566073">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFOB2.1
+  </codeId>
+ </AseUid>
+ <txtName>
+  BEAUVAIS 2.1
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  4500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  2500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   TIMSH
+  </codeWorkHr>
+  <Timsh>
+   <codeTimeRef>
+    UTCW
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    ANY
+   </codeDay>
+   <codeDayTil>
+    ANY
+   </codeDayTil>
+   <timeWef>
+    06:15
+   </timeWef>
+   <timeTil>
+    22:00
+   </timeTil>
+  </Timsh>
+  <txtRmkWorkHr>
+   WIN : 0615-2200, SUM : -1HR
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Extension for all scheduled commercial flights.#Activation known on BEAUVAIS APP or on ATIS 118.375MHz and phone number 03 44 11 49 28.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1566077">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFOB3
+  </codeId>
+ </AseUid>
+ <txtName>
+  BEAUVAIS 3
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  65
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  4500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   TIMSH
+  </codeWorkHr>
+  <Timsh>
+   <codeTimeRef>
+    UTCW
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    ANY
+   </codeDay>
+   <codeDayTil>
+    ANY
+   </codeDayTil>
+   <timeWef>
+    06:15
+   </timeWef>
+   <timeTil>
+    22:00
+   </timeTil>
+  </Timsh>
+  <txtRmkWorkHr>
+   WIN : 0615-2200, SUM : -1HR
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Extension for all scheduled commercial flights.#Activation known on BEAUVAIS APP or on ATIS 118.375MHz and phone number 03 44 11 49 28.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1566079">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFOB2.2
+  </codeId>
+ </AseUid>
+ <txtName>
+  BEAUVAIS 2.2
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  4500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  2500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   TIMSH
+  </codeWorkHr>
+  <Timsh>
+   <codeTimeRef>
+    UTCW
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    ANY
+   </codeDay>
+   <codeDayTil>
+    ANY
+   </codeDayTil>
+   <timeWef>
+    06:15
+   </timeWef>
+   <timeTil>
+    22:00
+   </timeTil>
+  </Timsh>
+  <txtRmkWorkHr>
+   WIN : 0615-2200, SUM : -1HR
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Extension for all scheduled commercial flights.#Activation known on BEAUVAIS APP or on ATIS 118.375MHz and phone number 03 44 11 49 28.#Can be downgraded to class E for certain air activities, in accordance with protocol.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1561455">
+  <codeType>
+   CTR
+  </codeType>
+  <codeId>
+   LFOB
+  </codeId>
+ </AseUid>
+ <txtName>
+  BEAUVAIS
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  1500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   TIMSH
+  </codeWorkHr>
+  <Timsh>
+   <codeTimeRef>
+    UTCW
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    ANY
+   </codeDay>
+   <timeWef>
+    06:15
+   </timeWef>
+   <timeTil>
+    22:00
+   </timeTil>
+  </Timsh>
+  <txtRmkWorkHr>
+   0615-2200, SUM : -1HR
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Extension for all scheduled commercial flights.#Activity known on ATIS 118.380 MHz or phone 03 44 84 69 41.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1566067">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFOB4
+  </codeId>
+ </AseUid>
+ <txtName>
+  BEAUVAIS 4
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  65
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  2500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   TIMSH
+  </codeWorkHr>
+  <Timsh>
+   <codeTimeRef>
+    UTCW
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    ANY
+   </codeDay>
+   <codeDayTil>
+    ANY
+   </codeDayTil>
+   <timeWef>
+    06:15
+   </timeWef>
+   <timeTil>
+    22:00
+   </timeTil>
+  </Timsh>
+  <txtRmkWorkHr>
+   WIN : 0615-2200, SUM : -1HR
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Extension for all scheduled commercial flights.#Activation known on BEAUVAIS APP or on ATIS 118.375MHz and phone number 03 44 11 49 28.#Can be downgraded to class E for certain air activities, in accordance with protocol.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="23717425">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFOB5
+  </codeId>
+ </AseUid>
+ <txtName>
+  BEAUVAIS 5
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  085
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  STD
+ </codeDistVerLower>
+ <valDistVerLower>
+  065
+ </valDistVerLower>
+ <uomDistVerLower>
+  FL
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HO
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   WIN : 0615-2200, SUM : -1HR#
+Extension pour tout vol commercial programmé.#
+Extension for all scheduled commercial flights.
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Activation known on BEAUVAIS APP or  ATIS 118.375 MHz and phone number 03 44 11 49 28.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1561401">
+  <codeType>
+   CTR
+  </codeType>
+  <codeId>
+   LFAQ
+  </codeId>
+ </AseUid>
+ <txtName>
+  ALBERT BRAY
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  2000
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   TIMSH
+  </codeWorkHr>
+  <Timsh>
+   <codeTimeRef>
+    UTC
+   </codeTimeRef>
+   <dateValidWef>
+    EDLST
+   </dateValidWef>
+   <dateValidTil>
+    SDLST
+   </dateValidTil>
+   <codeDay>
+    SAT
+   </codeDay>
+   <codeDayTil>
+    SAT
+   </codeDayTil>
+   <timeWef>
+    08:30
+   </timeWef>
+   <timeTil>
+    16:00
+   </timeTil>
+  </Timsh>
+  <Timsh>
+   <codeTimeRef>
+    UTC
+   </codeTimeRef>
+   <dateValidWef>
+    SDLST
+   </dateValidWef>
+   <dateValidTil>
+    EDLST
+   </dateValidTil>
+   <codeDay>
+    SAT
+   </codeDay>
+   <codeDayTil>
+    SAT
+   </codeDayTil>
+   <timeWef>
+    07:30
+   </timeWef>
+   <timeTil>
+    16:00
+   </timeTil>
+  </Timsh>
+  <Timsh>
+   <codeTimeRef>
+    UTCW
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    WD
+   </codeDay>
+   <codeDayTil>
+    WD
+   </codeDayTil>
+   <timeWef>
+    08:00
+   </timeWef>
+   <timeTil>
+    18:00
+   </timeTil>
+  </Timsh>
+  <txtRmkWorkHr>
+   WIN :#MON-FRI : 0800-1800#SAT : 0830-1600
+#SUM:- #MON-FRI : 0700-1700#SAT : 0730-1600#SUN and public HOL : not provided
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Outside these SKED, PPR last working day before 1300 to AD operator.#Users information on request through ALBERT TWR or LILLE APP.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1561747">
+  <codeType>
+   FIR
+  </codeType>
+  <codeId>
+   LFEE
+  </codeId>
+ </AseUid>
+ <txtName>
+  REIMS
+ </txtName>
+ <codeClass>
+  G
+ </codeClass>
+ <codeLocInd>
+  LFEE
+ </codeLocInd>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+ </Att>
+ <txtRmk>
+  ACC location : REIMS#AFS address: LFEEZRZX#Phone number: 03 26 84 62 33#
+Address: B.P. 2702# 51051 REIMS CEDEX#Frequencies: see ENR 6.1
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1564511">
+  <codeType>
+   R
+  </codeType>
+  <codeId>
+   LFR222B
+  </codeId>
+ </AseUid>
+ <txtName>
+  222 B
+ </txtName>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  230
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   NOTAM
+  </codeWorkHr>
+  <Timsh>
+   <codeTimeRef>
+    UTC
+   </codeTimeRef>
+   <dateValidWef>
+    01-01
+   </dateValidWef>
+   <dateValidTil>
+    31-12
+   </dateValidTil>
+   <codeDay>
+    ANY
+   </codeDay>
+   <codeEventWef>
+    SS
+   </codeEventWef>
+   <codeEventTil>
+    SR
+   </codeEventTil>
+  </Timsh>
+  <txtRmkWorkHr>
+   Possible activation HN by NOTAM .
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Administrator : 93ème RAM.#
+GAT : avoidance mandatory.#
+OAT : with authorization from administrator.#
+Activity schedule available on : (0600-1000, 1200-1600) : 04 56 85 74 81 or 04 56 85 74 06.#
+Actual activity known on MARSEILLE ACC/FIC.#
+Safety officer 93ème RAM : 06 73 90 50 33
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1560933">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC2
+  </codeId>
+ </AseUid>
+ <txtName>
+  CLERMONT 2
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  STD
+ </codeDistVerLower>
+ <valDistVerLower>
+  145
+ </valDistVerLower>
+ <uomDistVerLower>
+  FL
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+</Ase>
+<Ase>
+ <AseUid mid="1560937">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC2.20
+  </codeId>
+ </AseUid>
+ <txtName>
+  CLERMONT 2.20
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  145
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  5500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Lower limit FL 065 within VIC part 2.1lateral limits .#Lower limit FL 110 within CHAMPEIX part 2.2lateral limits.#Lower limit FL 085 within ORCINES part 2.3 lateral limits .
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1561901">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFLC2.30
+  </codeId>
+ </AseUid>
+ <txtName>
+  CLERMONT 2.30
+ </txtName>
+ <codeClass>
+  E
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  5500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  2700
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <codeDistVerMnm>
+  HEI
+ </codeDistVerMnm>
+ <valDistVerMnm>
+  1000
+ </valDistVerMnm>
+ <uomDistVerMnm>
+  FT
+ </uomDistVerMnm>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Lower limit FL 065 within VIC part 2.1 lateral limits.#Lower limit FL 110 within CHAMPEIX part 2.2 lateral limits.#Lower limit FL 085 within ORCINES part 2.3 lateral limits.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="400002984123733">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFSX6
+  </codeId>
+ </AseUid>
+ <txtName>
+  LUXEUIL 6
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  075
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  3000
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HO
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Possible activation H24 when QFU 29 in use at LFSX.
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  OAT/GAT procedures.#Except area LF-R 45 S7 when active.#Deactivation announced by RAI 129.925 MHz.#Activity known on BASEL INFO.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="364849146">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFSX4
+  </codeId>
+ </AseUid>
+ <txtName>
+  LUXEUIL 4
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  5000
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HO
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Activable H24 hors activité réelle de la EU-C 25 FW.#Possible activation H24 out of real activity of EU-C 25 FW.
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  OAT/GAT procedures.#Deactivation announced by RAI 129.925#Activity known on REIMS ACC, BASEL INFO and STRASBOURG INFO.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="364849140">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFSX1
+  </codeId>
+ </AseUid>
+ <txtName>
+  LUXEUIL 1
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  2200
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HO
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Activable H24.#
+Possible activation H24.
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  OAT/GAT procedures.#
+Except for CTR Luxeuil, TMA 5 Luxeuil, LF-R 45 S1 and LF-R 152 when active and for AWY G4.#
+Deactivation announced by RAI 129.925 MHz.#
+Activity known on REIMS ACC, BASEL INFO and STRASBOURG INFO.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="400001585988393">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFSX5
+  </codeId>
+ </AseUid>
+ <txtName>
+  LUXEUIL 5
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  075
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  3000
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HO
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Activable H24.#
+Possible activation H24.
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  OAT/GAT procedures.#
+Except areas LF-R 45 S1 et LF-R 45 S7  when active.#
+Deactivation announced by RAI 129.925 MHz.#
+Activity known on BASEL INFO.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="364849144">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFSX3
+  </codeId>
+ </AseUid>
+ <txtName>
+  LUXEUIL 3
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  4000
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HO
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Activable H24.#Possible activation H24.
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  OAT/GAT procedures.#
+Except for LF-R 45 S1, LF-R 45 S2, LF-R 45 NS and LF-R 152 when active and for AWY G4.#
+Deactivation announced by RAI 129.925 MHz.#
+Activity known on REIMS ACC, BASEL INFO and STRASBOURG INFO.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="364849142">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   LFSX2
+  </codeId>
+ </AseUid>
+ <txtName>
+  LUXEUIL 2
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  75
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  3500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HO
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Activable H24.#Possible activation H24.
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  OAT/GAT procedures.#
+Except for LF-R 45 S7 when active.#
+Deactivation announced by RAI 129.925 MHz.#
+Activity known on BASEL SIV.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1449455549">
+  <codeType>
+   CTR
+  </codeType>
+  <codeId>
+   LFSX
+  </codeId>
+ </AseUid>
+ <txtName>
+  LUXEUIL
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  3000
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   HX
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   Possible activation H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  OAT/GAT procedures.#
+Except for:#
+-LF-R 45 S1, LF-R 45 S7 et LF-R 45 D when active.#
+- LF-R 212 and LF-R 211 when active.#
+-a 1NM radius circle centered on 47°37'22"N, 006°20'56"E, at 500ft ASFC.#
+-a 1NM radius circle centered on 47°40'10"N, 006°15'15"E, at 500ft ASFC.#
+Deactivation announced by RAI 129.925 MHz#
+Activity known on BASEL INFO.#
+Flying over LUXEUIL SAINT- SAUVEUR AD BLW 1000ft ASFC prohibited H24.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1560993">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   TMA16161
+  </codeId>
+ </AseUid>
+ <txtName>
+  GENEVE 1 Double ref alti plancher
+ </txtName>
+ <codeClass>
+  C
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  3500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <codeDistVerMnm>
+  HEI
+ </codeDistVerMnm>
+ <valDistVerMnm>
+  1000
+ </valDistVerMnm>
+ <uomDistVerMnm>
+  FT
+ </uomDistVerMnm>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Cross-border airspace wherein ATS is provided by a foreign provider.#Refer to Swiss AIP.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="1560989">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   TMA16162
+  </codeId>
+ </AseUid>
+ <txtName>
+  GENEVE 2
+ </txtName>
+ <codeClass>
+  C
+ </codeClass>
+ <codeDistVerUpper>
+  STD
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  195
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FL
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  5500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Cross-border airspace wherein ATS is provided by a foreign provider.#Refer to Swiss AIP.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="7530053">
+  <codeType>
+   TMA
+  </codeType>
+  <codeId>
+   TMA16162F.
+  </codeId>
+ </AseUid>
+ <txtName>
+  GENEVE 2 FRANCAISE.20
+ </txtName>
+ <codeClass>
+  E
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  5500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  3500
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <codeDistVerMnm>
+  HEI
+ </codeDistVerMnm>
+ <valDistVerMnm>
+  1000
+ </valDistVerMnm>
+ <uomDistVerMnm>
+  FT
+ </uomDistVerMnm>
+ <Att>
+  <codeWorkHr>
+   H24
+  </codeWorkHr>
+  <txtRmkWorkHr>
+   H24
+  </txtRmkWorkHr>
+ </Att>
+ <txtRmk>
+  Cross-border airspace wherein ATS is provided by a foreign provider.#Refer to Swiss AIP.
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="19824706">
+  <codeType>
+   D-OTHER
+  </codeType>
+  <codeId>
+   NTV010NFP
+  </codeId>
+ </AseUid>
+ <txtName>
+  Double ref alti plafond
+ </txtName>
+ <codeClass>
+  R
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  2500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  HEI
+ </codeDistVerLower>
+ <valDistVerLower>
+  0
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <codeDistVerMax>
+  HEI
+ </codeDistVerMax>
+ <valDistVerMax>
+  1000
+ </valDistVerMax>
+ <uomDistVerMax>
+  FT
+ </uomDistVerMax>
+ <txtRmk>
+  un test
+ </txtRmk>
+</Ase>
+<Ase>
+ <AseUid mid="19824706-BPa">
+  <codeType>
+   D-OTHER
+  </codeType>
+  <codeId>
+   NTV010NFP
+  </codeId>
+ </AseUid>
+ <txtName>
+  Doubles ref alti plancher/plafond
+ </txtName>
+ <codeClass>
+  D
+ </codeClass>
+ <codeDistVerUpper>
+  ALT
+ </codeDistVerUpper>
+ <valDistVerUpper>
+  2500
+ </valDistVerUpper>
+ <uomDistVerUpper>
+  FT
+ </uomDistVerUpper>
+ <codeDistVerLower>
+  ALT
+ </codeDistVerLower>
+ <valDistVerLower>
+  1000
+ </valDistVerLower>
+ <uomDistVerLower>
+  FT
+ </uomDistVerLower>
+ <codeDistVerMax>
+  HEI
+ </codeDistVerMax>
+ <valDistVerMax>
+  2000
+ </valDistVerMax>
+ <uomDistVerMax>
+  FT
+ </uomDistVerMax>
+ <codeDistVerMnm>
+  HEI
+ </codeDistVerMnm>
+ <valDistVerMnm>
+  250
+ </valDistVerMnm>
+ <uomDistVerMnm>
+  FT
+ </uomDistVerMnm>
+ <txtRmk>
+  un test
+ </txtRmk>
+</Ase>
+</AIXM-Snapshot>

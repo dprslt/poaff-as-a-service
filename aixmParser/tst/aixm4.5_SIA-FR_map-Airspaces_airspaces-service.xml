@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AIXM-Snapshot created="2020-03-18T17:50:01.141+01:00" origin="Sia-France" version="4.5" effective="2019-12-05T00:00:00.000+01:00">
+<Sae>
+ <SaeUid mid="29598381">
+  <SerUid mid="1525980">
+   <UniUid mid="1524898">
+    <txtName>
+     LFLC CLERMONT test
+    </txtName>
+   </UniUid>
+   <codeType>
+    APP
+   </codeType>
+   <noSeq>
+    10
+   </noSeq>
+  </SerUid>
+  <AseUid mid="1613148-tst">
+   <codeType>
+    R
+   </codeType>
+   <codeId>
+    LFR506A
+   </codeId>
+  </AseUid>
+ </SaeUid>
+</Sae>
+</AIXM-Snapshot>
