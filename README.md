@@ -86,6 +86,15 @@ The processing can be customized by modifying `poaff_bpa/src/poaff.py`:
 - `geojsonConstruct`, `openairConstruct`, `kmlConstruct`: Enable/disable output formats
 - `partialConstruct`: Process only North/South France regions
 
+## Create version
+
+
+```
+python rename_poaff_files.py sia0226-1902-1803
+Get-ChildItem -Filter "sia0226-1902-1803@*" | Compress-Archive -DestinationPath "global_files.zip" -Force
+```
+
+
 ## Troubleshooting
 
 ### Common Issues
