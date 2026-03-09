@@ -1,0 +1,14 @@
+services:
+  poaff-web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    image: dprslt/poaff-web
+    ports:
+      - "5000:5000"
+    volumes:
+      # Optional: persist job output between container restarts
+      - poaff_jobs:/tmp/poaff_jobs
+
+volumes:
+  poaff_jobs:

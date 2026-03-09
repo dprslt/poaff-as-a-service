@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POAFF as a Service</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f0f4f8;
+      color: #1a202c;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    header h1 { font-size: 1.8rem; font-weight: 700; color: #2d3748; }
+    header p  { color: #718096; margin-top: 0.4rem; font-size: 0.95rem; }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.08);
+      padding: 1.75rem 2rem;
+      width: 100%;
+      max-width: 700px;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 { font-size: 1.1rem; margin-bottom: 1rem; color: #2d3748; }
+
+    /* Drop zone */
+    #drop-zone {
+      border: 2px dashed #cbd5e0;
+      border-radius: 8px;
+      padding: 2.5rem 1rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    #drop-zone.drag-over { border-color: #4299e1; background: #ebf8ff; }
+    #drop-zone input { display: none; }
+    #drop-zone p { color: #718096; font-size: 0.95rem; }
+    #drop-zone strong { color: #4299e1; }
+    #file-name { margin-top: .5rem; font-size: .85rem; color: #2d3748; font-weight: 600; }
+
+    label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .3rem; color: #4a5568; }
+    input[type=text] {
+      width: 100%;
+      padding: .5rem .75rem;
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      font-size: .95rem;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input[type=text]:focus { border-color: #4299e1; }
+
+    .field { margin-top: 1rem; }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .6rem 1.25rem;
+      border: none;
+      border-radius: 7px;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    button:disabled { opacity: .45; cursor: not-allowed; }
+    .btn-primary   { background: #4299e1; color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: #3182ce; }
+    .btn-success   { background: #48bb78; color: #fff; }
+    .btn-success:hover:not(:disabled) { background: #38a169; }
+    .btn-github    { background: #2d3748; color: #fff; }
+    .btn-github:hover:not(:disabled) { background: #1a202c; }
+    .btn-row { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; }
+
+    /* Log output */
+    #log-box {
+      background: #1a202c;
+      color: #a0aec0;
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      font-family: 'Courier New', monospace;
+      font-size: .8rem;
+      max-height: 320px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    #log-box .log-error { color: #fc8181; }
+    #log-box .log-ok    { color: #68d391; }
+
+    /* Status badge */
+    #status-badge {
+      display: inline-block;
+      padding: .25rem .7rem;
+      border-radius: 999px;
+      font-size: .8rem;
+      font-weight: 700;
+      margin-left: .6rem;
+    }
+    .badge-processing { background: #ebf8ff; color: #2b6cb0; }
+    .badge-done       { background: #f0fff4; color: #276749; }
+    .badge-error      { background: #fff5f5; color: #c53030; }
+
+    /* GitHub release panel */
+    #gh-panel { display: none; }
+    #gh-panel .field { margin-top: .75rem; }
+
+    #gh-result { margin-top: 1rem; font-size: .9rem; }
+    #gh-result a { color: #4299e1; }
+
+    .hidden { display: none !important; }
+    #progress-section { display: none; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>✈️ POAFF as a Service</h1>
+  <p>Upload a SIA zip file · process airspace data · download or publish a GitHub release</p>
+</header>
+
+<!-- Upload card -->
+<div class="card" id="upload-card">
+  <h2>1 · Upload SIA zip</h2>
+
+  <div id="drop-zone">
+    <input type="file" id="file-input" accept=".zip" />
+    <p>Drag &amp; drop your <strong>.zip</strong> file here, or <strong>click to browse</strong></p>
+    <div id="file-name"></div>
+  </div>
+
+  <div class="field">
+    <label for="prefix-input">Release prefix <span style="font-weight:400;color:#718096">(e.g. sia0226-1902-1803)</span></label>
+    <input type="text" id="prefix-input" placeholder="global" />
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-primary" id="upload-btn" disabled>🚀 Start processing</button>
+  </div>
+</div>
+
+<!-- Progress card -->
+<div class="card" id="progress-section">
+  <h2>2 · Processing <span id="status-badge" class="badge-processing">running…</span></h2>
+  <div id="log-box"></div>
+
+  <div class="btn-row">
+    <button class="btn-success hidden" id="download-btn">⬇️ Download results</button>
+    <button class="btn-github hidden" id="release-btn">🐙 Create GitHub release</button>
+  </div>
+</div>
+
+<!-- GitHub release card -->
+<div class="card hidden" id="gh-panel">
+  <h2>3 · Publish GitHub release</h2>
+
+  <div class="field">
+    <label for="gh-token">Personal access token <span style="font-weight:400;color:#718096">(repo scope)</span></label>
+    <input type="text" id="gh-token" placeholder="ghp_…" autocomplete="off" />
+  </div>
+  <div class="field">
+    <label for="gh-repo">Repository <span style="font-weight:400;color:#718096">(owner/repo)</span></label>
+    <input type="text" id="gh-repo" placeholder="dprslt/poaff-as-a-service" />
+  </div>
+  <div class="field">
+    <label for="gh-tag">Tag name</label>
+    <input type="text" id="gh-tag" placeholder="aip-03-26" />
+  </div>
+  <div class="field">
+    <label for="gh-name">Release title</label>
+    <input type="text" id="gh-name" placeholder="AIP 03/26" />
+  </div>
+  <div class="field">
+    <label for="gh-body">Description</label>
+    <input type="text" id="gh-body" placeholder="En vigueur du …" />
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-github" id="publish-btn">🚀 Publish release</button>
+  </div>
+
+  <div id="gh-result"></div>
+</div>
+
+<script>
+  const dropZone    = document.getElementById('drop-zone');
+  const fileInput   = document.getElementById('file-input');
+  const fileNameEl  = document.getElementById('file-name');
+  const prefixInput = document.getElementById('prefix-input');
+  const uploadBtn   = document.getElementById('upload-btn');
+  const progressSec = document.getElementById('progress-section');
+  const statusBadge = document.getElementById('status-badge');
+  const logBox      = document.getElementById('log-box');
+  const downloadBtn = document.getElementById('download-btn');
+  const releaseBtn  = document.getElementById('release-btn');
+  const ghPanel     = document.getElementById('gh-panel');
+  const publishBtn  = document.getElementById('publish-btn');
+  const ghResult    = document.getElementById('gh-result');
+
+  let currentJobId  = null;
+  let pollTimer     = null;
+  let lastLogCount  = 0;
+
+  // --- Drop zone ---
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if (f) setFile(f);
+  });
+  fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
+
+  function setFile(f) {
+    fileInput._file = f;
+    fileNameEl.textContent = `📦 ${f.name}`;
+    uploadBtn.disabled = false;
+  }
+
+  // --- Upload & start ---
+  uploadBtn.addEventListener('click', async () => {
+    const file = fileInput._file;
+    if (!file) return;
+
+    uploadBtn.disabled = true;
+    progressSec.style.display = 'block';
+    progressSec.scrollIntoView({ behavior: 'smooth' });
+    setStatus('processing');
+    logBox.innerHTML = '';
+    lastLogCount = 0;
+    downloadBtn.classList.add('hidden');
+    releaseBtn.classList.add('hidden');
+    ghPanel.classList.add('hidden');
+
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('prefix', prefixInput.value.trim());
+
+    try {
+      const resp = await fetch('/upload', { method: 'POST', body: fd });
+      const data = await resp.json();
+      if (!resp.ok) { appendLog('ERROR: ' + (data.error || 'Upload failed'), true); setStatus('error'); return; }
+      currentJobId = data.job_id;
+      pollTimer = setInterval(pollStatus, 2000);
+    } catch (err) {
+      appendLog('ERROR: ' + err, true);
+      setStatus('error');
+    }
+  });
+
+  // --- Status polling ---
+  async function pollStatus() {
+    if (!currentJobId) return;
+    try {
+      const resp = await fetch(`/status/${currentJobId}`);
+      const data = await resp.json();
+      if (!resp.ok) return;
+
+      // Append new log lines only
+      const newLines = data.logs.slice(lastLogCount);
+      newLines.forEach(l => appendLog(l));
+      lastLogCount = data.logs.length;
+
+      if (data.status === 'done') {
+        clearInterval(pollTimer);
+        setStatus('done');
+        downloadBtn.classList.remove('hidden');
+        releaseBtn.classList.remove('hidden');
+      } else if (data.status === 'error') {
+        clearInterval(pollTimer);
+        setStatus('error');
+      }
+    } catch (_) { /* network hiccup – retry next tick */ }
+  }
+
+  // --- Download ---
+  downloadBtn.addEventListener('click', () => {
+    if (currentJobId) window.location.href = `/download/${currentJobId}`;
+  });
+
+  // --- Show GitHub panel ---
+  releaseBtn.addEventListener('click', () => {
+    ghPanel.classList.remove('hidden');
+    ghPanel.scrollIntoView({ behavior: 'smooth' });
+    const p = prefixInput.value.trim();
+    if (p) document.getElementById('gh-tag').value = p;
+  });
+
+  // --- Publish release ---
+  publishBtn.addEventListener('click', async () => {
+    publishBtn.disabled = true;
+    ghResult.innerHTML = '<em>Publishing…</em>';
+
+    const payload = {
+      token: document.getElementById('gh-token').value.trim(),
+      repo:  document.getElementById('gh-repo').value.trim(),
+      tag:   document.getElementById('gh-tag').value.trim(),
+      name:  document.getElementById('gh-name').value.trim(),
+      body:  document.getElementById('gh-body').value.trim(),
+    };
+
+    try {
+      const resp = await fetch(`/release/${currentJobId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await resp.json();
+      if (!resp.ok) {
+        ghResult.innerHTML = `<span style="color:#c53030">❌ ${data.error || 'Release failed'}</span>`;
+      } else {
+        ghResult.innerHTML =
+          `<span style="color:#276749">✅ Release published: <a href="${data.release_url}" target="_blank">${data.release_url}</a></span><br>` +
+          `<span style="color:#718096">Uploaded ${data.uploaded_count} file(s)` +
+          (data.failed_count ? `, <span style="color:#c53030">${data.failed_count} failed</span>` : '') +
+          `</span>`;
+      }
+    } catch (err) {
+      ghResult.innerHTML = `<span style="color:#c53030">❌ ${err}</span>`;
+    }
+    publishBtn.disabled = false;
+  });
+
+  // --- Helpers ---
+  function setStatus(s) {
+    statusBadge.className = 'badge-' + s;
+    statusBadge.textContent = s === 'processing' ? 'running…' : s === 'done' ? 'done ✓' : 'error ✗';
+    if (s !== 'processing') uploadBtn.disabled = false;
+  }
+
+  function appendLog(line, isError = false) {
+    const span = document.createElement('span');
+    if (isError || line.startsWith('ERROR'))       span.className = 'log-error';
+    else if (line.startsWith('Processing completed successfully')) span.className = 'log-ok';
+    span.textContent = line + '\n';
+    logBox.appendChild(span);
+    logBox.scrollTop = logBox.scrollHeight;
+  }
+</script>
+</body>
+</html>

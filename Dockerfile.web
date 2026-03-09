@@ -1,0 +1,35 @@
+# Web-server image for POAFF as a Service
+# Extends the base processing image and adds a Flask front-end.
+FROM python:3.8-slim AS base
+
+# ── System dependencies (same as Dockerfile) ──────────────────────────────
+RUN apt-get update && apt-get install -y \
+    libgeos-dev \
+    libproj-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# ── Python dependencies ────────────────────────────────────────────────────
+COPY poaff_bpa/requirements.txt   /tmp/poaff_req.txt
+COPY aixmParser/requirements.txt  /tmp/aixm_req.txt
+COPY openairParser/requirements.txt /tmp/openair_req.txt
+COPY webserver/requirements.txt   /tmp/web_req.txt
+
+RUN pip install --no-cache-dir \
+        -r /tmp/poaff_req.txt \
+        -r /tmp/aixm_req.txt \
+        -r /tmp/openair_req.txt \
+        -r /tmp/web_req.txt
+
+# ── Application code ───────────────────────────────────────────────────────
+COPY poaff_bpa/      poaff_bpa/
+COPY aixmParser/     aixmParser/
+COPY openairParser/  openairParser/
+COPY docker-entrypoint.py /app/
+COPY webserver/      webserver/
+
+# ── Runtime ───────────────────────────────────────────────────────────────
+WORKDIR /app/poaff_bpa/src
+EXPOSE 5000
+CMD ["python", "/app/webserver/app.py"]
