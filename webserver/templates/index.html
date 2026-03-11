@@ -214,6 +214,17 @@
   let currentJobId  = null;
   let pollTimer     = null;
   let lastLogCount  = 0;
+  let isProcessing  = false;
+
+  // --- On page load: sync with any active/last job so all visitors see progress ---
+  (async function loadCurrentJobStatus() {
+    try {
+      const resp = await fetch('/current');
+      const data = await resp.json();
+      if (!data.job_id) return;                 // no job yet
+      syncJobState(data);
+    } catch (err) { console.warn('Could not load current job status:', err); }
+  })();
 
   // --- Drop zone ---
   dropZone.addEventListener('click', () => fileInput.click());
@@ -230,7 +241,7 @@
   function setFile(f) {
     fileInput._file = f;
     fileNameEl.textContent = `📦 ${f.name}`;
-    uploadBtn.disabled = false;
+    if (!isProcessing) uploadBtn.disabled = false;
   }
 
   // --- Upload & start ---
@@ -255,7 +266,19 @@
     try {
       const resp = await fetch('/upload', { method: 'POST', body: fd });
       const data = await resp.json();
-      if (!resp.ok) { appendLog('ERROR: ' + (data.error || 'Upload failed'), true); setStatus('error'); return; }
+      if (!resp.ok) {
+        appendLog('ERROR: ' + (data.error || 'Upload failed'), true);
+        setStatus('error');
+        if (resp.status === 409) {
+          // Another job is already running – switch to monitoring it
+          try {
+            const cur = await fetch('/current');
+            const curData = await cur.json();
+            if (curData.job_id) syncJobState(curData);
+          } catch (err) { console.warn('Could not fetch current job after 409:', err); }
+        }
+        return;
+      }
       currentJobId = data.job_id;
       pollTimer = setInterval(pollStatus, 2000);
     } catch (err) {
@@ -286,7 +309,7 @@
         clearInterval(pollTimer);
         setStatus('error');
       }
-    } catch (_) { /* network hiccup – retry next tick */ }
+    } catch (_) { console.warn('Polling error – will retry:', _); }
   }
 
   // --- Download ---
@@ -339,18 +362,55 @@
 
   // --- Helpers ---
   function setStatus(s) {
+    isProcessing = (s === 'processing');
     statusBadge.className = 'badge-' + s;
     statusBadge.textContent = s === 'processing' ? 'running…' : s === 'done' ? 'done ✓' : 'error ✗';
-    if (s !== 'processing') uploadBtn.disabled = false;
+    uploadBtn.disabled = isProcessing || !fileInput._file;
   }
 
   function appendLog(line, isError = false) {
+    // Progress-bar lines use \r to overwrite in a terminal.
+    // Extract only the last (most recent) progress state to show in the UI.
+    if (line.includes('\r')) {
+      const parts = line.split('\r');
+      const lastPart = parts[parts.length - 1].trim();
+      if (!lastPart) return;                // nothing meaningful after final \r
+      const existing = logBox.querySelector('.log-progress');
+      if (existing) {
+        existing.textContent = lastPart + '\n';
+        logBox.scrollTop = logBox.scrollHeight;
+        return;
+      }
+      const span = document.createElement('span');
+      span.className = 'log-progress';
+      span.style.color = '#90cdf4';
+      span.textContent = lastPart + '\n';
+      logBox.appendChild(span);
+      logBox.scrollTop = logBox.scrollHeight;
+      return;
+    }
     const span = document.createElement('span');
     if (isError || line.startsWith('ERROR'))       span.className = 'log-error';
     else if (line.startsWith('Processing completed successfully')) span.className = 'log-ok';
     span.textContent = line + '\n';
     logBox.appendChild(span);
     logBox.scrollTop = logBox.scrollHeight;
+  }
+
+  /** Apply a job-status response (from /current or /upload) to the UI. */
+  function syncJobState(data) {
+    currentJobId = data.job_id;
+    lastLogCount = 0;
+    progressSec.style.display = 'block';
+    setStatus(data.status);
+    data.logs.forEach(l => appendLog(l));
+    lastLogCount = data.logs.length;
+    if (data.status === 'processing') {
+      if (!pollTimer) pollTimer = setInterval(pollStatus, 2000);
+    } else if (data.status === 'done') {
+      downloadBtn.classList.remove('hidden');
+      releaseBtn.classList.remove('hidden');
+    }
   }
 </script>
 </body>

@@ -37,6 +37,11 @@ jobs_lock = threading.Lock()
 # fixed /app paths for AIXM input data during execution).
 processing_lock = threading.Lock()
 
+# The most-recently started job (set before acquiring processing_lock so any
+# visitor can observe the queued/running/completed state).
+current_job_id: "str | None" = None
+current_job_lock = threading.Lock()
+
 JOBS_BASE_DIR = Path("/tmp/poaff_jobs")
 JOBS_BASE_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -78,6 +83,14 @@ def _rename_output_files(output_dir: Path, prefix: str) -> None:
 
 def _run_processing(job_id: str, zip_path: Path, job_dir: Path, prefix: str) -> None:
     """Run the POAFF pipeline in a background thread."""
+    global current_job_id  # pylint: disable=global-statement
+    # Set current_job_id before acquiring processing_lock so any visitor
+    # immediately sees the new job (even while it is queued behind the lock).
+    # The /upload route prevents a second job from being accepted while one
+    # is already processing, so this assignment is safe in practice.
+    with current_job_lock:
+        current_job_id = job_id
+
     logs = jobs[job_id]["logs"]
 
     try:
@@ -149,6 +162,15 @@ def index():
 
 @app.route("/upload", methods=["POST"])
 def upload():
+    # Reject new uploads while a job is already processing.
+    with current_job_lock:
+        active_id = current_job_id
+    if active_id:
+        with jobs_lock:
+            active_job = jobs.get(active_id)
+        if active_job and active_job["status"] == "processing":
+            return jsonify({"error": "A processing job is already running. Please wait for it to finish."}), 409
+
     if "file" not in request.files:
         return jsonify({"error": "No file part in the request."}), 400
 
@@ -197,6 +219,28 @@ def status(job_id: str):
     if not job:
         return jsonify({"error": "Job not found."}), 404
     return jsonify({"status": job["status"], "logs": job["logs"]})
+
+
+@app.route("/current")
+def current():
+    """Return the status of the current (or last) processing job.
+
+    Every visitor can poll this endpoint to observe progress and results
+    without needing to know a specific job id.
+    """
+    with current_job_lock:
+        job_id = current_job_id
+    if not job_id:
+        return jsonify({"job_id": None})
+    with jobs_lock:
+        job = jobs.get(job_id)
+    if not job:
+        return jsonify({"job_id": None})
+    return jsonify({
+        "job_id": job_id,
+        "status": job["status"],
+        "logs": job["logs"],
+    })
 
 
 @app.route("/download/<job_id>")
