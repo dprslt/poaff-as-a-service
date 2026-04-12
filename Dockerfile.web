@@ -32,4 +32,4 @@ COPY webserver/      webserver/
 # ── Runtime ───────────────────────────────────────────────────────────────
 WORKDIR /app/poaff_bpa/src
 EXPOSE 5000
-CMD ["python", "/app/webserver/app.py"]
+CMD ["gunicorn", "--chdir", "/app/webserver", "--worker-class", "gthread", "--workers", "1", "--threads", "8", "--timeout", "120", "--bind", "0.0.0.0:5000", "app:app"]

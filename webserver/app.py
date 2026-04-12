@@ -9,6 +9,7 @@ GitHub release with the airspace output files.
 
 import os
 import re
+import signal
 import shutil
 import subprocess
 import threading
@@ -51,6 +52,14 @@ RELEASE_FILENAME_RE = re.compile(r".+@airspaces-.+\.(txt|geojson)$")
 
 # Allowed characters for the release prefix
 PREFIX_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
+ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-9;?]*[ -/]*[@-~]")
+PROGRESS_LINE_RE = re.compile(r"^\[[=\s]{1,200}\]\s+\d+\s+%\s+-\s+.+$")
+MAX_LOG_LINES = max(int(os.environ.get("POAFF_MAX_LOG_LINES", "2000")), 200)
+PROCESS_NICENESS = int(os.environ.get("POAFF_PROCESS_NICENESS", "10"))
+
+
+class ProcessingStopped(Exception):
+    """Raised when a running job is stopped by user request."""
 
 
 # ---------------------------------------------------------------------------
@@ -77,6 +86,98 @@ def _rename_output_files(output_dir: Path, prefix: str) -> None:
             p.rename(p.parent / p.name.replace("global@", f"{prefix}@", 1))
 
 
+def _normalize_log_line(line: str) -> str:
+    """Strip control sequences and normalize captured process output."""
+    clean = ANSI_ESCAPE_RE.sub("", line or "")
+    return clean.replace("\r", "").strip()
+
+
+def _append_job_log(job_id: str, line: str) -> None:
+    """Append a stable log line or update the current progress line."""
+    clean = _normalize_log_line(line)
+    if not clean:
+        return
+
+    with jobs_lock:
+        job = jobs.get(job_id)
+        if not job:
+            return
+
+        if PROGRESS_LINE_RE.match(clean):
+            job["progress"] = clean
+            return
+
+        job["progress"] = None
+        job["logs"].append(clean)
+
+        overflow = len(job["logs"]) - MAX_LOG_LINES
+        if overflow > 0:
+            del job["logs"][:overflow]
+            job["log_start"] += overflow
+
+
+def _apply_processing_priority(proc: subprocess.Popen) -> None:
+    """Reduce the worker process priority so the UI remains responsive."""
+    if PROCESS_NICENESS <= 0:
+        return
+
+    setpriority = getattr(os, "setpriority", None)
+    prio_process = getattr(os, "PRIO_PROCESS", None)
+    if setpriority is None or prio_process is None:
+        return
+
+    try:
+        setpriority(prio_process, proc.pid, PROCESS_NICENESS)
+    except OSError:
+        return
+
+
+def _build_job_response(job: dict, since=None, full_snapshot: bool = False) -> dict:
+    """Return either a full job snapshot or only log lines after *since*."""
+    log_start = job.get("log_start", 0)
+    log_count = log_start + len(job["logs"])
+
+    if full_snapshot or since is None or since < log_start or since > log_count:
+        logs = list(job["logs"])
+        reset_logs = True
+    else:
+        logs = job["logs"][since - log_start:]
+        reset_logs = False
+
+    return {
+        "status": job["status"],
+        "logs": logs,
+        "log_start": log_start,
+        "log_count": log_count,
+        "progress": job.get("progress"),
+        "reset_logs": reset_logs,
+        "stop_requested": job.get("stop_requested", False),
+    }
+
+
+def _stop_requested(job_id: str) -> bool:
+    with jobs_lock:
+        job = jobs.get(job_id)
+        return bool(job and job.get("stop_requested"))
+
+
+def _set_job_status(job_id: str, status: str) -> None:
+    with jobs_lock:
+        job = jobs.get(job_id)
+        if job:
+            job["status"] = status
+
+
+def _terminate_process(proc: subprocess.Popen) -> None:
+    if proc.poll() is not None:
+        return
+
+    try:
+        os.killpg(proc.pid, signal.SIGTERM)
+    except (AttributeError, OSError, ProcessLookupError, PermissionError):
+        proc.terminate()
+
+
 # ---------------------------------------------------------------------------
 # Background processing
 # ---------------------------------------------------------------------------
@@ -91,8 +192,6 @@ def _run_processing(job_id: str, zip_path: Path, job_dir: Path, prefix: str) -> 
     with current_job_lock:
         current_job_id = job_id
 
-    logs = jobs[job_id]["logs"]
-
     try:
         input_dir = job_dir / "input"
         output_dir = job_dir / "output"
@@ -100,10 +199,16 @@ def _run_processing(job_id: str, zip_path: Path, job_dir: Path, prefix: str) -> 
         output_dir.mkdir(parents=True, exist_ok=True)
 
         shutil.copy2(zip_path, input_dir / zip_path.name)
-        logs.append(f"Queued {zip_path.name} for processing …")
+        _append_job_log(job_id, f"Queued {zip_path.name} for processing ...")
+
+        if _stop_requested(job_id):
+            raise ProcessingStopped("Processing stopped before execution started.")
 
         with processing_lock:
-            logs.append("Processing started.")
+            if _stop_requested(job_id):
+                raise ProcessingStopped("Processing stopped before execution started.")
+
+            _append_job_log(job_id, "Processing started.")
 
             # Clean previous run's artefacts from the shared POAFF paths so
             # the tool starts from a clean state.
@@ -122,11 +227,28 @@ def _run_processing(job_id: str, zip_path: Path, job_dir: Path, prefix: str) -> 
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 text=True,
+                bufsize=1,
                 env=env,
+                start_new_session=True,
             ) as proc:
-                for line in proc.stdout:
-                    logs.append(line.rstrip())
-                proc.wait()
+                _apply_processing_priority(proc)
+
+                with jobs_lock:
+                    if job_id in jobs:
+                        jobs[job_id]["process"] = proc
+
+                try:
+                    if proc.stdout is not None:
+                        for line in proc.stdout:
+                            _append_job_log(job_id, line)
+                    proc.wait()
+                finally:
+                    with jobs_lock:
+                        if job_id in jobs:
+                            jobs[job_id]["process"] = None
+
+            if _stop_requested(job_id):
+                raise ProcessingStopped("Processing stopped by user.")
 
             if proc.returncode != 0:
                 raise RuntimeError(
@@ -139,16 +261,18 @@ def _run_processing(job_id: str, zip_path: Path, job_dir: Path, prefix: str) -> 
 
         if prefix and prefix != "global":
             _rename_output_files(output_dir, prefix)
-            logs.append(f"Output files renamed with prefix '{prefix}'.")
+            _append_job_log(job_id, f"Output files renamed with prefix '{prefix}'.")
 
-        logs.append("Processing completed successfully.")
-        with jobs_lock:
-            jobs[job_id]["status"] = "done"
+        _append_job_log(job_id, "Processing completed successfully.")
+        _set_job_status(job_id, "done")
+
+    except ProcessingStopped as exc:
+        _append_job_log(job_id, str(exc))
+        _set_job_status(job_id, "stopped")
 
     except Exception as exc:  # pylint: disable=broad-except
-        logs.append(f"ERROR: {exc}")
-        with jobs_lock:
-            jobs[job_id]["status"] = "error"
+        _append_job_log(job_id, f"ERROR: {exc}")
+        _set_job_status(job_id, "error")
 
 
 # ---------------------------------------------------------------------------
@@ -198,8 +322,12 @@ def upload():
         jobs[job_id] = {
             "status": "processing",
             "logs": [],
+            "log_start": 0,
+            "progress": None,
             "job_dir": job_dir,
             "prefix": prefix or "global",
+            "process": None,
+            "stop_requested": False,
         }
 
     thread = threading.Thread(
@@ -214,11 +342,12 @@ def upload():
 
 @app.route("/status/<job_id>")
 def status(job_id: str):
+    since = request.args.get("since", type=int)
     with jobs_lock:
         job = jobs.get(job_id)
     if not job:
         return jsonify({"error": "Job not found."}), 404
-    return jsonify({"status": job["status"], "logs": job["logs"]})
+    return jsonify(_build_job_response(job, since=since))
 
 
 @app.route("/current")
@@ -236,11 +365,33 @@ def current():
         job = jobs.get(job_id)
     if not job:
         return jsonify({"job_id": None})
-    return jsonify({
-        "job_id": job_id,
-        "status": job["status"],
-        "logs": job["logs"],
-    })
+    response = _build_job_response(job, full_snapshot=True)
+    response["job_id"] = job_id
+    return jsonify(response)
+
+
+@app.route("/stop/<job_id>", methods=["POST"])
+def stop(job_id: str):
+    with jobs_lock:
+        job = jobs.get(job_id)
+        if not job:
+            return jsonify({"error": "Job not found."}), 404
+
+        if job["status"] != "processing":
+            return jsonify({"error": "Only a running job can be stopped."}), 409
+
+        if job.get("stop_requested"):
+            return jsonify({"status": "stopping", "stop_requested": True})
+
+        job["stop_requested"] = True
+        proc = job.get("process")
+
+    _append_job_log(job_id, "Stop requested by user.")
+
+    if proc is not None:
+        _terminate_process(proc)
+
+    return jsonify({"status": "stopping", "stop_requested": True})
 
 
 @app.route("/download/<job_id>")

@@ -5,413 +5,773 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>POAFF as a Service</title>
   <style>
+    :root {
+      color-scheme: light;
+      --bg-top: #eef5fb;
+      --bg-bottom: #dbe8f6;
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --card-border: #d7e3ef;
+      --text-main: #142433;
+      --text-muted: #5d7083;
+      --primary: #1d7cd6;
+      --primary-hover: #145fa5;
+      --success: #25895d;
+      --success-hover: #1c6847;
+      --danger: #bf3f3f;
+      --danger-hover: #972f2f;
+      --dark: #122033;
+      --dark-hover: #09111d;
+      --shadow: 0 18px 50px rgba(20, 36, 51, 0.08);
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: system-ui, -apple-system, sans-serif;
-      background: #f0f4f8;
-      color: #1a202c;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(29, 124, 214, 0.14), transparent 24%),
+        linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+      color: var(--text-main);
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem 1rem;
+      padding: 1.25rem;
+    }
+
+    .page-shell {
+      width: min(100%, 1800px);
+      margin: 0 auto;
     }
 
     header {
-      text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.25rem;
+      padding: 0.25rem 0.15rem;
     }
-    header h1 { font-size: 1.8rem; font-weight: 700; color: #2d3748; }
-    header p  { color: #718096; margin-top: 0.4rem; font-size: 0.95rem; }
+
+    header h1 {
+      font-size: clamp(1.9rem, 2.7vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #183149;
+    }
+
+    header p {
+      margin-top: 0.45rem;
+      max-width: 65rem;
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.25rem;
+    }
 
     .card {
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,.08);
-      padding: 1.75rem 2rem;
       width: 100%;
-      max-width: 700px;
-      margin-bottom: 1.5rem;
+      background: var(--card-bg);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 1.5rem;
     }
-    .card h2 { font-size: 1.1rem; margin-bottom: 1rem; color: #2d3748; }
 
-    /* Drop zone */
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .section-head h2 {
+      font-size: 1.15rem;
+      font-weight: 750;
+      color: #203246;
+    }
+
+    .section-head p {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
     #drop-zone {
-      border: 2px dashed #cbd5e0;
-      border-radius: 8px;
-      padding: 2.5rem 1rem;
+      border: 2px dashed #b7c7d6;
+      border-radius: 16px;
+      padding: 3.5rem 1.25rem;
       text-align: center;
       cursor: pointer;
-      transition: border-color .2s, background .2s;
+      background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(241,247,252,0.95));
+      transition: border-color .2s ease, background .2s ease, transform .2s ease;
     }
-    #drop-zone.drag-over { border-color: #4299e1; background: #ebf8ff; }
-    #drop-zone input { display: none; }
-    #drop-zone p { color: #718096; font-size: 0.95rem; }
-    #drop-zone strong { color: #4299e1; }
-    #file-name { margin-top: .5rem; font-size: .85rem; color: #2d3748; font-weight: 600; }
 
-    label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .3rem; color: #4a5568; }
-    input[type=text] {
-      width: 100%;
-      padding: .5rem .75rem;
-      border: 1px solid #cbd5e0;
-      border-radius: 6px;
-      font-size: .95rem;
-      outline: none;
-      transition: border-color .2s;
+    #drop-zone.drag-over {
+      border-color: var(--primary);
+      background: #edf6ff;
+      transform: translateY(-1px);
     }
-    input[type=text]:focus { border-color: #4299e1; }
+
+    #drop-zone input { display: none; }
+
+    #drop-zone p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    #drop-zone strong { color: var(--primary); }
+
+    #file-name {
+      margin-top: 0.75rem;
+      font-size: 0.92rem;
+      color: #203246;
+      font-weight: 700;
+    }
 
     .field { margin-top: 1rem; }
+
+    label {
+      display: block;
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: #32475c;
+    }
+
+    .label-hint {
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    input[type=text] {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid #c7d5e3;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.9);
+      color: var(--text-main);
+      font-size: 0.96rem;
+      outline: none;
+      transition: border-color .2s ease, box-shadow .2s ease;
+    }
+
+    input[type=text]:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(29, 124, 214, 0.12);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .btn-row.compact { margin-top: 0; }
 
     button {
       display: inline-flex;
       align-items: center;
-      gap: .4rem;
-      padding: .6rem 1.25rem;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.72rem 1.15rem;
       border: none;
-      border-radius: 7px;
-      font-size: .95rem;
-      font-weight: 600;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
       cursor: pointer;
-      transition: opacity .15s;
+      transition: transform .15s ease, opacity .15s ease, background .15s ease;
     }
-    button:disabled { opacity: .45; cursor: not-allowed; }
-    .btn-primary   { background: #4299e1; color: #fff; }
-    .btn-primary:hover:not(:disabled) { background: #3182ce; }
-    .btn-success   { background: #48bb78; color: #fff; }
-    .btn-success:hover:not(:disabled) { background: #38a169; }
-    .btn-github    { background: #2d3748; color: #fff; }
-    .btn-github:hover:not(:disabled) { background: #1a202c; }
-    .btn-row { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; }
 
-    /* Log output */
+    button:hover:not(:disabled) { transform: translateY(-1px); }
+    button:disabled { opacity: 0.48; cursor: not-allowed; transform: none; }
+
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+    .btn-success { background: var(--success); color: #fff; }
+    .btn-success:hover:not(:disabled) { background: var(--success-hover); }
+    .btn-github { background: var(--dark); color: #fff; }
+    .btn-github:hover:not(:disabled) { background: var(--dark-hover); }
+    .btn-secondary { background: #dce8f3; color: #203246; }
+    .btn-secondary:hover:not(:disabled) { background: #cbdceb; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover:not(:disabled) { background: var(--danger-hover); }
+
+    #log-panel {
+      background: linear-gradient(180deg, #0c1726 0%, #09111d 100%);
+      border: 1px solid #22384d;
+      border-radius: 16px;
+      padding: 0.95rem;
+      margin-top: 0.25rem;
+    }
+
+    #log-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.85rem;
+    }
+
+    .panel-title {
+      display: block;
+      color: #e2ebf5;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+
+    #log-meta {
+      display: block;
+      margin-top: 0.18rem;
+      color: #90a5ba;
+      font-size: 0.82rem;
+    }
+
     #log-box {
-      background: #1a202c;
-      color: #a0aec0;
-      border-radius: 8px;
-      padding: 1rem 1.25rem;
-      font-family: 'Courier New', monospace;
-      font-size: .8rem;
-      max-height: 320px;
+      background: rgba(5, 10, 18, 0.82);
+      color: #b6c6d8;
+      border-radius: 12px;
+      border: 1px solid rgba(125, 154, 182, 0.16);
+      padding: 1rem 1.1rem;
+      font-family: Consolas, Monaco, monospace;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      min-height: 28rem;
+      max-height: 58vh;
       overflow-y: auto;
       white-space: pre-wrap;
-      word-break: break-all;
+      word-break: break-word;
     }
-    #log-box .log-error { color: #fc8181; }
-    #log-box .log-ok    { color: #68d391; }
 
-    /* Status badge */
+    #log-box .log-error { color: #ff9b9b; }
+    #log-box .log-ok { color: #7fe2a2; }
+    #log-box .log-progress { color: #8fc8ff; }
+
+    #log-panel:fullscreen {
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+    }
+
+    #log-panel:fullscreen #log-box {
+      flex: 1;
+      min-height: 0;
+      max-height: none;
+    }
+
     #status-badge {
-      display: inline-block;
-      padding: .25rem .7rem;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.28rem 0.72rem;
       border-radius: 999px;
-      font-size: .8rem;
-      font-weight: 700;
-      margin-left: .6rem;
+      font-size: 0.8rem;
+      font-weight: 800;
+      margin-left: 0.6rem;
     }
-    .badge-processing { background: #ebf8ff; color: #2b6cb0; }
-    .badge-done       { background: #f0fff4; color: #276749; }
-    .badge-error      { background: #fff5f5; color: #c53030; }
 
-    /* GitHub release panel */
+    .badge-processing { background: #eaf4ff; color: #1e63a6; }
+    .badge-stopping { background: #fff4db; color: #946200; }
+    .badge-done { background: #eefbf3; color: #1d6847; }
+    .badge-error { background: #fff0f0; color: #b23434; }
+    .badge-stopped { background: #f3f4f6; color: #4b5563; }
+
     #gh-panel { display: none; }
-    #gh-panel .field { margin-top: .75rem; }
 
-    #gh-result { margin-top: 1rem; font-size: .9rem; }
-    #gh-result a { color: #4299e1; }
+    #gh-result {
+      margin-top: 1rem;
+      font-size: 0.92rem;
+      line-height: 1.5;
+    }
+
+    #gh-result a { color: var(--primary); }
 
     .hidden { display: none !important; }
     #progress-section { display: none; }
+
+    @media (max-width: 720px) {
+      body { padding: 0.75rem; }
+      .card { padding: 1rem; border-radius: 16px; }
+      #drop-zone { padding: 2.5rem 1rem; }
+      #log-box { min-height: 20rem; max-height: 50vh; }
+      #log-toolbar { align-items: flex-start; }
+    }
   </style>
 </head>
 <body>
+  <div class="page-shell">
+    <header>
+      <h1>✈️ POAFF as a Service</h1>
+      <p>Upload a SIA zip file, watch the shared live processing logs across the full page, switch them to full-screen when needed, then download or publish the generated airspace files.</p>
+    </header>
 
-<header>
-  <h1>✈️ POAFF as a Service</h1>
-  <p>Upload a SIA zip file · process airspace data · download or publish a GitHub release</p>
-</header>
+    <main class="layout">
+      <section class="card" id="upload-card">
+        <div class="section-head">
+          <div>
+            <h2>1 · Upload SIA zip</h2>
+          </div>
+          <p>Only one processing run can execute at a time. If another visitor already started one, this page will switch to the shared live view.</p>
+        </div>
 
-<!-- Upload card -->
-<div class="card" id="upload-card">
-  <h2>1 · Upload SIA zip</h2>
+        <div id="drop-zone">
+          <input type="file" id="file-input" accept=".zip" />
+          <p>Drag and drop your <strong>.zip</strong> file here, or <strong>click to browse</strong></p>
+          <div id="file-name"></div>
+        </div>
 
-  <div id="drop-zone">
-    <input type="file" id="file-input" accept=".zip" />
-    <p>Drag &amp; drop your <strong>.zip</strong> file here, or <strong>click to browse</strong></p>
-    <div id="file-name"></div>
+        <div class="field">
+          <label for="prefix-input">Release prefix <span class="label-hint">(e.g. sia0226-1902-1803)</span></label>
+          <input type="text" id="prefix-input" placeholder="global" />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" id="upload-btn" disabled>🚀 Start processing</button>
+        </div>
+      </section>
+
+      <section class="card" id="progress-section">
+        <div class="section-head">
+          <div>
+            <h2>2 · Processing <span id="status-badge" class="badge-processing">running…</span></h2>
+          </div>
+          <p>The log panel expands to the full available width. Use full-screen mode for long processing sessions or projector views.</p>
+        </div>
+
+        <div id="log-panel">
+          <div id="log-toolbar">
+            <div>
+              <span class="panel-title">Live processing logs</span>
+              <span id="log-meta">Waiting for output…</span>
+            </div>
+
+            <div class="btn-row compact">
+              <button class="btn-secondary" id="fullscreen-btn">⛶ Full screen logs</button>
+              <button class="btn-danger hidden" id="stop-btn">⏹ Stop processing</button>
+            </div>
+          </div>
+
+          <div id="log-box" aria-live="polite"></div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-success hidden" id="download-btn">⬇️ Download results</button>
+          <button class="btn-github hidden" id="release-btn">🐙 Create GitHub release</button>
+        </div>
+      </section>
+
+      <section class="card hidden" id="gh-panel">
+        <div class="section-head">
+          <div>
+            <h2>3 · Publish GitHub release</h2>
+          </div>
+          <p>Create a release directly from the completed job output.</p>
+        </div>
+
+        <div class="field">
+          <label for="gh-token">Personal access token <span class="label-hint">(repo scope)</span></label>
+          <input type="text" id="gh-token" placeholder="ghp_…" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label for="gh-repo">Repository <span class="label-hint">(owner/repo)</span></label>
+          <input type="text" id="gh-repo" placeholder="dprslt/poaff-as-a-service" />
+        </div>
+        <div class="field">
+          <label for="gh-tag">Tag name</label>
+          <input type="text" id="gh-tag" placeholder="aip-03-26" />
+        </div>
+        <div class="field">
+          <label for="gh-name">Release title</label>
+          <input type="text" id="gh-name" placeholder="AIP 03/26" />
+        </div>
+        <div class="field">
+          <label for="gh-body">Description</label>
+          <input type="text" id="gh-body" placeholder="En vigueur du …" />
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-github" id="publish-btn">🚀 Publish release</button>
+        </div>
+
+        <div id="gh-result"></div>
+      </section>
+    </main>
   </div>
 
-  <div class="field">
-    <label for="prefix-input">Release prefix <span style="font-weight:400;color:#718096">(e.g. sia0226-1902-1803)</span></label>
-    <input type="text" id="prefix-input" placeholder="global" />
-  </div>
+  <script>
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+    const fileNameEl = document.getElementById('file-name');
+    const prefixInput = document.getElementById('prefix-input');
+    const uploadBtn = document.getElementById('upload-btn');
+    const progressSec = document.getElementById('progress-section');
+    const statusBadge = document.getElementById('status-badge');
+    const logPanel = document.getElementById('log-panel');
+    const logMeta = document.getElementById('log-meta');
+    const logBox = document.getElementById('log-box');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const releaseBtn = document.getElementById('release-btn');
+    const ghPanel = document.getElementById('gh-panel');
+    const publishBtn = document.getElementById('publish-btn');
+    const ghResult = document.getElementById('gh-result');
 
-  <div class="btn-row">
-    <button class="btn-primary" id="upload-btn" disabled>🚀 Start processing</button>
-  </div>
-</div>
+    let currentJobId = null;
+    let pollTimer = null;
+    let lastLogCount = 0;
+    let isProcessing = false;
 
-<!-- Progress card -->
-<div class="card" id="progress-section">
-  <h2>2 · Processing <span id="status-badge" class="badge-processing">running…</span></h2>
-  <div id="log-box"></div>
-
-  <div class="btn-row">
-    <button class="btn-success hidden" id="download-btn">⬇️ Download results</button>
-    <button class="btn-github hidden" id="release-btn">🐙 Create GitHub release</button>
-  </div>
-</div>
-
-<!-- GitHub release card -->
-<div class="card hidden" id="gh-panel">
-  <h2>3 · Publish GitHub release</h2>
-
-  <div class="field">
-    <label for="gh-token">Personal access token <span style="font-weight:400;color:#718096">(repo scope)</span></label>
-    <input type="text" id="gh-token" placeholder="ghp_…" autocomplete="off" />
-  </div>
-  <div class="field">
-    <label for="gh-repo">Repository <span style="font-weight:400;color:#718096">(owner/repo)</span></label>
-    <input type="text" id="gh-repo" placeholder="dprslt/poaff-as-a-service" />
-  </div>
-  <div class="field">
-    <label for="gh-tag">Tag name</label>
-    <input type="text" id="gh-tag" placeholder="aip-03-26" />
-  </div>
-  <div class="field">
-    <label for="gh-name">Release title</label>
-    <input type="text" id="gh-name" placeholder="AIP 03/26" />
-  </div>
-  <div class="field">
-    <label for="gh-body">Description</label>
-    <input type="text" id="gh-body" placeholder="En vigueur du …" />
-  </div>
-
-  <div class="btn-row">
-    <button class="btn-github" id="publish-btn">🚀 Publish release</button>
-  </div>
-
-  <div id="gh-result"></div>
-</div>
-
-<script>
-  const dropZone    = document.getElementById('drop-zone');
-  const fileInput   = document.getElementById('file-input');
-  const fileNameEl  = document.getElementById('file-name');
-  const prefixInput = document.getElementById('prefix-input');
-  const uploadBtn   = document.getElementById('upload-btn');
-  const progressSec = document.getElementById('progress-section');
-  const statusBadge = document.getElementById('status-badge');
-  const logBox      = document.getElementById('log-box');
-  const downloadBtn = document.getElementById('download-btn');
-  const releaseBtn  = document.getElementById('release-btn');
-  const ghPanel     = document.getElementById('gh-panel');
-  const publishBtn  = document.getElementById('publish-btn');
-  const ghResult    = document.getElementById('gh-result');
-
-  let currentJobId  = null;
-  let pollTimer     = null;
-  let lastLogCount  = 0;
-  let isProcessing  = false;
-
-  // --- On page load: sync with any active/last job so all visitors see progress ---
-  (async function loadCurrentJobStatus() {
-    try {
-      const resp = await fetch('/current');
-      const data = await resp.json();
-      if (!data.job_id) return;                 // no job yet
-      syncJobState(data);
-    } catch (err) { console.warn('Could not load current job status:', err); }
-  })();
-
-  // --- Drop zone ---
-  dropZone.addEventListener('click', () => fileInput.click());
-  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
-  dropZone.addEventListener('dragleave', ()  => dropZone.classList.remove('drag-over'));
-  dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('drag-over');
-    const f = e.dataTransfer.files[0];
-    if (f) setFile(f);
-  });
-  fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
-
-  function setFile(f) {
-    fileInput._file = f;
-    fileNameEl.textContent = `📦 ${f.name}`;
-    if (!isProcessing) uploadBtn.disabled = false;
-  }
-
-  // --- Upload & start ---
-  uploadBtn.addEventListener('click', async () => {
-    const file = fileInput._file;
-    if (!file) return;
-
-    uploadBtn.disabled = true;
-    progressSec.style.display = 'block';
-    progressSec.scrollIntoView({ behavior: 'smooth' });
-    setStatus('processing');
-    logBox.innerHTML = '';
-    lastLogCount = 0;
-    downloadBtn.classList.add('hidden');
-    releaseBtn.classList.add('hidden');
-    ghPanel.classList.add('hidden');
-
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('prefix', prefixInput.value.trim());
-
-    try {
-      const resp = await fetch('/upload', { method: 'POST', body: fd });
-      const data = await resp.json();
-      if (!resp.ok) {
-        appendLog('ERROR: ' + (data.error || 'Upload failed'), true);
-        setStatus('error');
-        if (resp.status === 409) {
-          // Another job is already running – switch to monitoring it
-          try {
-            const cur = await fetch('/current');
-            const curData = await cur.json();
-            if (curData.job_id) syncJobState(curData);
-          } catch (err) { console.warn('Could not fetch current job after 409:', err); }
+    (async function loadCurrentJobStatus() {
+      try {
+        const resp = await fetch('/current');
+        const data = await resp.json();
+        if (!data.job_id) {
+          updateLogMeta('idle', false);
+          return;
         }
+        renderJobState(data.job_id, data);
+      } catch (err) {
+        console.warn('Could not load current job status:', err);
+      }
+    })();
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', event => {
+      event.preventDefault();
+      dropZone.classList.add('drag-over');
+    });
+    dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+    dropZone.addEventListener('drop', event => {
+      event.preventDefault();
+      dropZone.classList.remove('drag-over');
+      const file = event.dataTransfer.files[0];
+      if (file) {
+        setFile(file);
+      }
+    });
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) {
+        setFile(fileInput.files[0]);
+      }
+    });
+
+    function setFile(file) {
+      fileInput._file = file;
+      fileNameEl.textContent = `📦 ${file.name}`;
+      if (!isProcessing) {
+        uploadBtn.disabled = false;
+      }
+    }
+
+    uploadBtn.addEventListener('click', async () => {
+      const file = fileInput._file;
+      if (!file) {
         return;
       }
-      currentJobId = data.job_id;
-      pollTimer = setInterval(pollStatus, 2000);
-    } catch (err) {
-      appendLog('ERROR: ' + err, true);
-      setStatus('error');
-    }
-  });
 
-  // --- Status polling ---
-  async function pollStatus() {
-    if (!currentJobId) return;
-    try {
-      const resp = await fetch(`/status/${currentJobId}`);
-      const data = await resp.json();
-      if (!resp.ok) return;
+      uploadBtn.disabled = true;
+      progressSec.style.display = 'block';
+      progressSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      clearJobDisplay();
+      setStatus('processing', false);
 
-      // Append new log lines only
-      const newLines = data.logs.slice(lastLogCount);
-      newLines.forEach(l => appendLog(l));
-      lastLogCount = data.logs.length;
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('prefix', prefixInput.value.trim());
 
-      if (data.status === 'done') {
-        clearInterval(pollTimer);
-        setStatus('done');
-        downloadBtn.classList.remove('hidden');
-        releaseBtn.classList.remove('hidden');
-      } else if (data.status === 'error') {
-        clearInterval(pollTimer);
-        setStatus('error');
+      try {
+        const resp = await fetch('/upload', { method: 'POST', body: formData });
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          if (resp.status === 409) {
+            appendLog('A processing job is already running. Switching to the shared live view.');
+            const currentResp = await fetch('/current');
+            const currentData = await currentResp.json();
+            if (currentData.job_id) {
+              renderJobState(currentData.job_id, currentData);
+            }
+            return;
+          }
+
+          appendLog('ERROR: ' + (data.error || 'Upload failed'), true);
+          setStatus('error', false);
+          return;
+        }
+
+        currentJobId = data.job_id;
+        startPolling();
+        await pollStatus();
+      } catch (err) {
+        appendLog('ERROR: ' + err, true);
+        setStatus('error', false);
       }
-    } catch (_) { console.warn('Polling error – will retry:', _); }
-  }
+    });
 
-  // --- Download ---
-  downloadBtn.addEventListener('click', () => {
-    if (currentJobId) window.location.href = `/download/${currentJobId}`;
-  });
+    stopBtn.addEventListener('click', async () => {
+      if (!currentJobId) {
+        return;
+      }
 
-  // --- Show GitHub panel ---
-  releaseBtn.addEventListener('click', () => {
-    ghPanel.classList.remove('hidden');
-    ghPanel.scrollIntoView({ behavior: 'smooth' });
-    const p = prefixInput.value.trim();
-    if (p) document.getElementById('gh-tag').value = p;
-  });
+      stopBtn.disabled = true;
 
-  // --- Publish release ---
-  publishBtn.addEventListener('click', async () => {
-    publishBtn.disabled = true;
-    ghResult.innerHTML = '<em>Publishing…</em>';
+      try {
+        const resp = await fetch(`/stop/${currentJobId}`, { method: 'POST' });
+        const data = await resp.json();
+        if (!resp.ok) {
+          appendLog('ERROR: ' + (data.error || 'Stop request failed'), true);
+          stopBtn.disabled = false;
+          return;
+        }
 
-    const payload = {
-      token: document.getElementById('gh-token').value.trim(),
-      repo:  document.getElementById('gh-repo').value.trim(),
-      tag:   document.getElementById('gh-tag').value.trim(),
-      name:  document.getElementById('gh-name').value.trim(),
-      body:  document.getElementById('gh-body').value.trim(),
-    };
+        setStatus('processing', true);
+        updateLogMeta('processing', true);
+        await pollStatus();
+      } catch (err) {
+        appendLog('ERROR: ' + err, true);
+        stopBtn.disabled = false;
+      }
+    });
 
-    try {
-      const resp = await fetch(`/release/${currentJobId}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await resp.json();
-      if (!resp.ok) {
-        ghResult.innerHTML = `<span style="color:#c53030">❌ ${data.error || 'Release failed'}</span>`;
+    fullscreenBtn.addEventListener('click', async () => {
+      try {
+        if (document.fullscreenElement === logPanel) {
+          await document.exitFullscreen();
+        } else {
+          await logPanel.requestFullscreen();
+        }
+      } catch (err) {
+        appendLog('ERROR: Could not toggle full-screen mode: ' + err, true);
+      }
+    });
+
+    document.addEventListener('fullscreenchange', updateFullscreenButton);
+    updateFullscreenButton();
+
+    async function pollStatus() {
+      if (!currentJobId) {
+        return;
+      }
+
+      try {
+        const resp = await fetch(`/status/${currentJobId}?since=${lastLogCount}`);
+        const data = await resp.json();
+        if (!resp.ok) {
+          return;
+        }
+        renderJobState(currentJobId, data);
+      } catch (err) {
+        console.warn('Polling error, will retry:', err);
+      }
+    }
+
+    function renderJobState(jobId, data) {
+      const jobChanged = currentJobId !== jobId;
+      currentJobId = jobId;
+      progressSec.style.display = 'block';
+
+      if (jobChanged || data.reset_logs) {
+        clearJobDisplay(data.log_start || 0);
+      }
+
+      data.logs.forEach(line => appendLog(line));
+      lastLogCount = typeof data.log_count === 'number'
+        ? data.log_count
+        : lastLogCount + data.logs.length;
+      setProgressLine(data.progress || null);
+
+      setStatus(data.status, data.stop_requested);
+      updateLogMeta(data.status, data.stop_requested);
+
+      const isDone = data.status === 'done';
+      downloadBtn.classList.toggle('hidden', !isDone);
+      releaseBtn.classList.toggle('hidden', !isDone);
+      ghPanel.classList.add('hidden');
+      if (!isDone) {
+        ghPanel.style.display = 'none';
+      }
+
+      if (data.status === 'processing') {
+        startPolling();
       } else {
-        ghResult.innerHTML =
-          `<span style="color:#276749">✅ Release published: <a href="${data.release_url}" target="_blank">${data.release_url}</a></span><br>` +
-          `<span style="color:#718096">Uploaded ${data.uploaded_count} file(s)` +
-          (data.failed_count ? `, <span style="color:#c53030">${data.failed_count} failed</span>` : '') +
-          `</span>`;
+        clearPolling();
       }
-    } catch (err) {
-      ghResult.innerHTML = `<span style="color:#c53030">❌ ${err}</span>`;
     }
-    publishBtn.disabled = false;
-  });
 
-  // --- Helpers ---
-  function setStatus(s) {
-    isProcessing = (s === 'processing');
-    statusBadge.className = 'badge-' + s;
-    statusBadge.textContent = s === 'processing' ? 'running…' : s === 'done' ? 'done ✓' : 'error ✗';
-    uploadBtn.disabled = isProcessing || !fileInput._file;
-  }
+    function clearJobDisplay(logStart = 0) {
+      logBox.innerHTML = '';
+      lastLogCount = logStart;
+      downloadBtn.classList.add('hidden');
+      releaseBtn.classList.add('hidden');
+      ghPanel.classList.add('hidden');
+      ghPanel.style.display = 'none';
+      updateLogMeta('idle', false);
+    }
 
-  function appendLog(line, isError = false) {
-    // Progress-bar lines use \r to overwrite in a terminal.
-    // Extract only the last (most recent) progress state to show in the UI.
-    if (line.includes('\r')) {
-      const parts = line.split('\r');
-      const lastPart = parts[parts.length - 1].trim();
-      if (!lastPart) return;                // nothing meaningful after final \r
-      const existing = logBox.querySelector('.log-progress');
-      if (existing) {
-        existing.textContent = lastPart + '\n';
+    function startPolling() {
+      if (!pollTimer) {
+        pollTimer = setInterval(pollStatus, 2000);
+      }
+    }
+
+    function clearPolling() {
+      if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+    }
+
+    downloadBtn.addEventListener('click', () => {
+      if (currentJobId) {
+        window.location.href = `/download/${currentJobId}`;
+      }
+    });
+
+    releaseBtn.addEventListener('click', () => {
+      ghPanel.classList.remove('hidden');
+      ghPanel.style.display = 'block';
+      ghPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const prefix = prefixInput.value.trim();
+      if (prefix) {
+        document.getElementById('gh-tag').value = prefix;
+      }
+    });
+
+    publishBtn.addEventListener('click', async () => {
+      publishBtn.disabled = true;
+      ghResult.innerHTML = '<em>Publishing…</em>';
+
+      const payload = {
+        token: document.getElementById('gh-token').value.trim(),
+        repo: document.getElementById('gh-repo').value.trim(),
+        tag: document.getElementById('gh-tag').value.trim(),
+        name: document.getElementById('gh-name').value.trim(),
+        body: document.getElementById('gh-body').value.trim(),
+      };
+
+      try {
+        const resp = await fetch(`/release/${currentJobId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const data = await resp.json();
+
+        if (!resp.ok) {
+          ghResult.innerHTML = `<span style="color:#b23434">❌ ${data.error || 'Release failed'}</span>`;
+        } else {
+          ghResult.innerHTML =
+            `<span style="color:#1d6847">✅ Release published: <a href="${data.release_url}" target="_blank" rel="noreferrer">${data.release_url}</a></span><br>` +
+            `<span style="color:#5d7083">Uploaded ${data.uploaded_count} file(s)` +
+            (data.failed_count ? `, <span style="color:#b23434">${data.failed_count} failed</span>` : '') +
+            `</span>`;
+        }
+      } catch (err) {
+        ghResult.innerHTML = `<span style="color:#b23434">❌ ${err}</span>`;
+      }
+
+      publishBtn.disabled = false;
+    });
+
+    function setStatus(status, stopRequested) {
+      isProcessing = status === 'processing';
+      const badgeState = stopRequested && status === 'processing' ? 'stopping' : status;
+      statusBadge.className = `badge-${badgeState}`;
+
+      const labelByState = {
+        processing: 'running…',
+        stopping: 'stopping…',
+        done: 'done ✓',
+        error: 'error ✗',
+        stopped: 'stopped',
+      };
+      statusBadge.textContent = labelByState[badgeState] || status;
+
+      uploadBtn.disabled = isProcessing || !fileInput._file;
+      stopBtn.classList.toggle('hidden', status !== 'processing');
+      stopBtn.disabled = status !== 'processing' || stopRequested;
+      stopBtn.textContent = stopRequested ? '⏹ Stopping…' : '⏹ Stop processing';
+    }
+
+    function appendLog(line, isError = false) {
+      if (line.includes('\r')) {
+        const parts = line.split('\r');
+        const lastPart = parts[parts.length - 1].trim();
+        if (!lastPart) {
+          return;
+        }
+
+        let progressLine = logBox.querySelector('.log-progress');
+        if (!progressLine) {
+          progressLine = document.createElement('span');
+          progressLine.className = 'log-progress';
+          logBox.appendChild(progressLine);
+        }
+        progressLine.textContent = lastPart + '\n';
         logBox.scrollTop = logBox.scrollHeight;
         return;
       }
+
       const span = document.createElement('span');
-      span.className = 'log-progress';
-      span.style.color = '#90cdf4';
-      span.textContent = lastPart + '\n';
+      if (isError || line.startsWith('ERROR')) {
+        span.className = 'log-error';
+      } else if (line.startsWith('Processing completed successfully')) {
+        span.className = 'log-ok';
+      }
+      span.textContent = line + '\n';
       logBox.appendChild(span);
       logBox.scrollTop = logBox.scrollHeight;
-      return;
     }
-    const span = document.createElement('span');
-    if (isError || line.startsWith('ERROR'))       span.className = 'log-error';
-    else if (line.startsWith('Processing completed successfully')) span.className = 'log-ok';
-    span.textContent = line + '\n';
-    logBox.appendChild(span);
-    logBox.scrollTop = logBox.scrollHeight;
-  }
 
-  /** Apply a job-status response (from /current or /upload) to the UI. */
-  function syncJobState(data) {
-    currentJobId = data.job_id;
-    lastLogCount = 0;
-    progressSec.style.display = 'block';
-    setStatus(data.status);
-    data.logs.forEach(l => appendLog(l));
-    lastLogCount = data.logs.length;
-    if (data.status === 'processing') {
-      if (!pollTimer) pollTimer = setInterval(pollStatus, 2000);
-    } else if (data.status === 'done') {
-      downloadBtn.classList.remove('hidden');
-      releaseBtn.classList.remove('hidden');
+    function setProgressLine(line) {
+      const existing = logBox.querySelector('.log-progress');
+      if (!line) {
+        existing?.remove();
+        return;
+      }
+
+      const progressLine = existing || document.createElement('span');
+      if (!existing) {
+        progressLine.className = 'log-progress';
+        logBox.appendChild(progressLine);
+      }
+      progressLine.textContent = line + '\n';
+      logBox.scrollTop = logBox.scrollHeight;
     }
-  }
-</script>
+
+    function updateLogMeta(status, stopRequested) {
+      if (!lastLogCount) {
+        logMeta.textContent = 'Waiting for output…';
+        return;
+      }
+
+      const parts = [`${lastLogCount} log line${lastLogCount === 1 ? '' : 's'}`];
+      if (status === 'processing' && stopRequested) {
+        parts.push('stop requested');
+      } else if (status === 'processing') {
+        parts.push('live');
+      } else if (status === 'done') {
+        parts.push('completed');
+      } else if (status === 'stopped') {
+        parts.push('stopped');
+      } else if (status === 'error') {
+        parts.push('failed');
+      }
+      logMeta.textContent = parts.join(' · ');
+    }
+
+    function updateFullscreenButton() {
+      const isFullscreen = document.fullscreenElement === logPanel;
+      fullscreenBtn.textContent = isFullscreen ? '🡼 Exit full screen' : '⛶ Full screen logs';
+    }
+  </script>
 </body>
 </html>
