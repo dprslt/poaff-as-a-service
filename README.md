@@ -2,9 +2,17 @@
 
 # POAFF As A Service
 
-This repository Wrap  the POAFF project and it dependencies to create a doker image to ease the use of this tool in automated environments.
+This repository wraps the POAFF project and its dependencies to create Docker images for automated and browser-based use.
 
-The image is pushed to `dprslt/poaff`.
+The published images are:
+
+- `dprslt/poaff` for the CLI or headless processing workflow, built from `Dockerfile`
+- `dprslt/poaff-web` for the web interface, built from `Dockerfile.web`
+
+CI behavior is explicit:
+
+- Pull requests build both images for validation but do not push them to Docker Hub
+- Pushes to `main` and version tags matching `v*.*.*` build and publish both images to Docker Hub
 
 This repo currently only support the SIA AIXM4.5 files workflow.
 
@@ -26,6 +34,8 @@ docker compose up --build
 
 Open **http://localhost:5000** in your browser.
 
+This starts the web image locally from `Dockerfile.web`. In CI, the same image is published as `dprslt/poaff-web`.
+
 **With plain Docker:**
 
 ```bash
@@ -46,6 +56,8 @@ docker run --rm -p 5000:5000 dprslt/poaff-web
    uploaded as release assets — log files and catalogues are excluded.
 
 ### Option B – CLI / Docker (headless)
+
+The headless image is built from `Dockerfile` and published by CI as `dprslt/poaff`.
 
 #### Prerequisites
 
