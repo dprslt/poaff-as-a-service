@@ -66,7 +66,12 @@ class Logger:
 
     ### Destruction de la classe
     def __del__(self) -> None:
-        self.closeFile()
+        try:
+            if getattr(sys, "is_finalizing", lambda: False)():
+                return
+            self.closeFile()
+        except Exception:
+            pass
         return
 
     def __repr__(self) -> str:
