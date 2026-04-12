@@ -5,3 +5,5 @@ docker_output/
 data/
 bin/
 venv/
+__pycache__/
+*.pyc

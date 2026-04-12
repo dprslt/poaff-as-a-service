@@ -14,7 +14,7 @@ from pathlib import Path
 
 def main():
     # Define paths
-    temp_input = Path("/tmp/input")
+    temp_input = Path(os.environ.get("POAFF_INPUT_DIR", "/tmp/input"))
     sia_input = Path("/app/poaff_bpa/input/SIA")
     sia_src = sia_input / "src"
     poaff_py = Path("/app/poaff_bpa/src/poaff.py")

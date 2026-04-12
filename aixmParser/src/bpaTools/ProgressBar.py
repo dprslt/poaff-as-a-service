@@ -6,7 +6,7 @@ import time
 class ProgressBar:
 
     def __init__ (self, valmax, maxbar, mod=10, title="", isSilent:bool=False) -> None:
-        self.isSilent = isSilent            # Set as 'True' for Silent mode (no ProgressBar message!
+        self.isSilent = isSilent or (not sys.stdout.isatty())            # Disable the progress bar when output is redirected.
         if valmax == 0:  valmax = 1
         if maxbar > 200: maxbar = 200
         self.valmax = valmax
