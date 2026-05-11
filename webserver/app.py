@@ -430,7 +430,7 @@ def create_release(job_id: str):
     if not job or job["status"] != "done":
         return jsonify({"error": "Job not found or not yet completed."}), 400
 
-    data = request.get_json(silent=True) or {}
+    data = request.get_json(force=True, silent=True) or {}
     github_token = data.get("token", "").strip()
     repo = data.get("repo", "").strip()   # "owner/repo"
     tag = data.get("tag", "").strip()

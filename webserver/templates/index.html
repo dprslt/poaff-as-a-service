@@ -646,9 +646,6 @@
     });
 
     publishBtn.addEventListener('click', async () => {
-      publishBtn.disabled = true;
-      ghResult.innerHTML = '<em>Publishing…</em>';
-
       const payload = {
         token: document.getElementById('gh-token').value.trim(),
         repo: document.getElementById('gh-repo').value.trim(),
@@ -656,6 +653,18 @@
         name: document.getElementById('gh-name').value.trim(),
         body: document.getElementById('gh-body').value.trim(),
       };
+
+      const missing = [];
+      if (!payload.token) missing.push('Personal access token');
+      if (!payload.repo)  missing.push('Repository');
+      if (!payload.tag)   missing.push('Tag name');
+      if (missing.length) {
+        ghResult.innerHTML = `<span style="color:#b23434">❌ Please fill in the required field(s): ${missing.join(', ')}</span>`;
+        return;
+      }
+
+      publishBtn.disabled = true;
+      ghResult.innerHTML = '<em>Publishing…</em>';
 
       try {
         const resp = await fetch(`/release/${currentJobId}`, {
