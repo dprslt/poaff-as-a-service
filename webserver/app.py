@@ -12,6 +12,7 @@ import re
 import signal
 import shutil
 import subprocess
+import tempfile
 import threading
 import uuid
 import zipfile
@@ -37,6 +38,11 @@ jobs_lock = threading.Lock()
 # A lock so only one POAFF processing run executes at a time (the tool uses
 # fixed /app paths for AIXM input data during execution).
 processing_lock = threading.Lock()
+
+# Per-job locks so that simultaneous download requests for the same job do
+# not race to create the same ZIP archive.
+_archive_locks: "dict[str, threading.Lock]" = {}
+_archive_locks_lock = threading.Lock()
 
 # The most-recently started job (set before acquiring processing_lock so any
 # visitor can observe the queued/running/completed state).
@@ -408,12 +414,44 @@ def download(job_id: str):
     output_dir = job_dir / "output"
     archive_path = job_dir / f"{prefix}_results.zip"
 
-    if not archive_path.exists():
-        with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as zf:
-            if output_dir.exists():
-                for p in output_dir.rglob("*"):
-                    if p.is_file():
-                        zf.write(p, p.relative_to(output_dir))
+    # Obtain (or create) a per-job lock so concurrent download requests do not
+    # race to build the same archive simultaneously.
+    with _archive_locks_lock:
+        if job_id not in _archive_locks:
+            _archive_locks[job_id] = threading.Lock()
+        job_archive_lock = _archive_locks[job_id]
+
+    with job_archive_lock:
+        if not archive_path.exists():
+            # Collect files from the _POAFF subdirectory only (the SIA/ and
+            # log files produced during intermediate parsing steps are not
+            # part of the user-facing output).
+            poaff_dir = output_dir / "_POAFF"
+            search_root = poaff_dir if poaff_dir.exists() else output_dir
+
+            # Write to a temporary file first so that a failed or interrupted
+            # archive creation never leaves a corrupt file at archive_path.
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                dir=job_dir, prefix=".tmp_archive_", suffix=".zip"
+            )
+            try:
+                os.close(tmp_fd)
+                with zipfile.ZipFile(tmp_path, "w", zipfile.ZIP_DEFLATED) as zf:
+                    for p in sorted(search_root.rglob("*")):
+                        if p.is_file():
+                            # Always compute the archive name relative to
+                            # output_dir (not search_root) so that the
+                            # _POAFF/ directory prefix is preserved in the
+                            # ZIP.  Users extract the archive and navigate
+                            # into _POAFF/ to find the airspace files.
+                            zf.write(p, p.relative_to(output_dir))
+                os.replace(tmp_path, archive_path)
+            except Exception:
+                try:
+                    os.unlink(tmp_path)
+                except OSError:
+                    pass
+                raise
 
     return send_file(
         archive_path,

@@ -56,9 +56,22 @@ def main():
         if file.is_file():
             print(f"  {file.name}")
 
-    # Detect filenames using regex - updated for actual SIA naming patterns
-    xml_pattern = re.compile(r'XML_SIA_(\d{4}-\d{2}-\d{2})\.xml')
-    aixm_pattern = re.compile(r'AIXM4\.5_all_FR_OM_(\d{4}-\d{2}-\d{2})\.xml')
+    # Detect filenames using regex.
+    # Support both naming conventions used by the SIA:
+    #   New format: XML_SIA_YYYY-MM-DD.xml / AIXM4.5_all_FR_OM_YYYY-MM-DD.xml
+    #   Old format: YYYYMMDD-YYYYMMDD_AIRAC-XXXX_xml_SIA-FR.xml /
+    #               YYYYMMDD-YYYYMMDD_AIRAC-XXXX_aixm4.5_SIA-FR.xml
+    xml_patterns = [
+        re.compile(r'XML_SIA_(\d{4}-\d{2}-\d{2})\.xml'),
+        re.compile(r'\d{8}-\d{8}_AIRAC-\d{4}_xml_SIA-FR(?:_BPa)?\.xml'),  # _BPa = Pascal Bazile suffix
+    ]
+    aixm_patterns = [
+        re.compile(r'AIXM4\.5_all_FR_OM_(\d{4}-\d{2}-\d{2})\.xml'),
+        re.compile(r'\d{8}-\d{8}_AIRAC-\d{4}_aixm4\.5_SIA-FR\.xml'),
+    ]
+
+    def _matches_any(name: str, patterns) -> bool:
+        return any(p.fullmatch(name) for p in patterns)
 
     xml_file = None
     aixm_file = None
@@ -68,10 +81,10 @@ def main():
         if file.is_file():
             relative_path = file.relative_to(sia_src)
             print(f"  Checking file: {relative_path}")
-            if xml_file is None and xml_pattern.fullmatch(file.name):
+            if xml_file is None and _matches_any(file.name, xml_patterns):
                 xml_file = file
                 print(f"    -> Found XML file: {relative_path}")
-            elif aixm_file is None and aixm_pattern.fullmatch(file.name):
+            elif aixm_file is None and _matches_any(file.name, aixm_patterns):
                 aixm_file = file
                 print(f"    -> Found AIXM file: {relative_path}")
             else:
@@ -79,9 +92,12 @@ def main():
 
     if xml_file is None and aixm_file is None:
         print("ERROR: No valid SIA files found with expected naming pattern")
-        print("Expected patterns:")
+        print("Expected patterns (new format):")
         print("  XML:  XML_SIA_YYYY-MM-DD.xml")
         print("  AIXM: AIXM4.5_all_FR_OM_YYYY-MM-DD.xml")
+        print("Expected patterns (old format):")
+        print("  XML:  YYYYMMDD-YYYYMMDD_AIRAC-XXXX_xml_SIA-FR.xml")
+        print("  AIXM: YYYYMMDD-YYYYMMDD_AIRAC-XXXX_aixm4.5_SIA-FR.xml")
         sys.exit(1)
 
     if xml_file is not None:
