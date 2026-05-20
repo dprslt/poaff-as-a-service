@@ -63,7 +63,7 @@ def main():
     #               YYYYMMDD-YYYYMMDD_AIRAC-XXXX_aixm4.5_SIA-FR.xml
     xml_patterns = [
         re.compile(r'XML_SIA_(\d{4}-\d{2}-\d{2})\.xml'),
-        re.compile(r'\d{8}-\d{8}_AIRAC-\d{4}_xml_SIA-FR(?:_BPa)?\.xml'),
+        re.compile(r'\d{8}-\d{8}_AIRAC-\d{4}_xml_SIA-FR(?:_BPa)?\.xml'),  # _BPa = Pascal Bazile suffix
     ]
     aixm_patterns = [
         re.compile(r'AIXM4\.5_all_FR_OM_(\d{4}-\d{2}-\d{2})\.xml'),

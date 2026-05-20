@@ -41,7 +41,7 @@ processing_lock = threading.Lock()
 
 # Per-job locks so that simultaneous download requests for the same job do
 # not race to create the same ZIP archive.
-_archive_locks: dict = {}
+_archive_locks: "dict[str, threading.Lock]" = {}
 _archive_locks_lock = threading.Lock()
 
 # The most-recently started job (set before acquiring processing_lock so any
@@ -439,6 +439,11 @@ def download(job_id: str):
                 with zipfile.ZipFile(tmp_path, "w", zipfile.ZIP_DEFLATED) as zf:
                     for p in sorted(search_root.rglob("*")):
                         if p.is_file():
+                            # Always compute the archive name relative to
+                            # output_dir (not search_root) so that the
+                            # _POAFF/ directory prefix is preserved in the
+                            # ZIP.  Users extract the archive and navigate
+                            # into _POAFF/ to find the airspace files.
                             zf.write(p, p.relative_to(output_dir))
                 os.replace(tmp_path, archive_path)
             except Exception:
