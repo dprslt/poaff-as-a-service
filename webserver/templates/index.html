@@ -372,15 +372,15 @@
           <div>
             <h2>3 · Publish GitHub release</h2>
           </div>
-          <p>Create a release directly from the completed job output.</p>
+          <p>Create a release directly from the completed job output. Token and repo can be pre-configured via environment variables.</p>
         </div>
 
         <div class="field">
-          <label for="gh-token">Personal access token <span class="label-hint">(repo scope)</span></label>
+          <label for="gh-token">Personal access token <span class="label-hint">(leave empty if pre-configured)</span></label>
           <input type="text" id="gh-token" placeholder="ghp_…" autocomplete="off" />
         </div>
         <div class="field">
-          <label for="gh-repo">Repository <span class="label-hint">(owner/repo)</span></label>
+          <label for="gh-repo">Repository <span class="label-hint">(owner/repo, leave empty if pre-configured)</span></label>
           <input type="text" id="gh-repo" placeholder="dprslt/poaff-as-a-service" />
         </div>
         <div class="field">
@@ -428,6 +428,7 @@
     let pollTimer = null;
     let lastLogCount = 0;
     let isProcessing = false;
+    let currentAiracInfo = null;
 
     (async function loadCurrentJobStatus() {
       try {
@@ -468,6 +469,20 @@
       fileNameEl.textContent = `📦 ${file.name}`;
       if (!isProcessing) {
         uploadBtn.disabled = false;
+      }
+      const match = file.name.match(/^export_xml_bd_sia_(\d{4})-(\d{2})-(\d{2})/);
+      if (match) {
+        const [, year, month, day] = match.map(Number);
+        const d = new Date(year, month - 1, day);
+        const startMs = d.getTime();
+        const yearStart = new Date(year, 0, 0).getTime();
+        const doy = Math.floor((startMs - yearStart) / 86400000);
+        const cycle = Math.floor((doy - 1) / 28) + 1;
+        const ys = year % 100;
+        const tag = 'aip-' +
+          String(cycle).padStart(2, '0') + '-' +
+          String(ys).padStart(2, '0');
+        prefixInput.value = tag;
       }
     }
 
@@ -591,12 +606,33 @@
       setStatus(data.status, data.stop_requested);
       updateLogMeta(data.status, data.stop_requested);
 
+      if (data.airac_info) {
+        currentAiracInfo = data.airac_info;
+      }
+
       const isDone = data.status === 'done';
       downloadBtn.classList.toggle('hidden', !isDone);
       releaseBtn.classList.toggle('hidden', !isDone);
       ghPanel.classList.add('hidden');
       if (!isDone) {
         ghPanel.style.display = 'none';
+      }
+
+      const releaseResult = data.release_result;
+      if (isDone && releaseResult) {
+        ghPanel.classList.add('hidden');
+        ghPanel.style.display = 'none';
+        releaseBtn.classList.add('hidden');
+        if (releaseResult.release_url) {
+          ghResult.innerHTML =
+            '<div style="margin-top:0.75rem;padding:0.75rem 1rem;background:#eefbf3;border-radius:12px;font-size:0.92rem;">' +
+            '<span style="color:#1d6847;font-weight:700;">✓ GitHub release published</span><br>' +
+            '<a href="' + releaseResult.release_url + '" target="_blank" rel="noreferrer">' +
+            releaseResult.release_url + '</a><br>' +
+            '<span style="color:#5d7083">' + releaseResult.uploaded_count + ' asset(s) uploaded' +
+            (releaseResult.failed_count ? ', <span style="color:#b23434">' + releaseResult.failed_count + ' failed</span>' : '') +
+            '</span></div>';
+        }
       }
 
       if (data.status === 'processing') {
@@ -609,10 +645,12 @@
     function clearJobDisplay(logStart = 0) {
       logBox.innerHTML = '';
       lastLogCount = logStart;
+      currentAiracInfo = null;
       downloadBtn.classList.add('hidden');
       releaseBtn.classList.add('hidden');
       ghPanel.classList.add('hidden');
       ghPanel.style.display = 'none';
+      document.getElementById('gh-result').innerHTML = '';
       updateLogMeta('idle', false);
     }
 
@@ -639,9 +677,16 @@
       ghPanel.classList.remove('hidden');
       ghPanel.style.display = 'block';
       ghPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      const prefix = prefixInput.value.trim();
-      if (prefix) {
-        document.getElementById('gh-tag').value = prefix;
+      const airac = currentAiracInfo;
+      if (airac) {
+        document.getElementById('gh-tag').value = airac.tag || '';
+        document.getElementById('gh-name').value = airac.name || '';
+        document.getElementById('gh-body').value = airac.body || '';
+      } else {
+        const prefix = prefixInput.value.trim();
+        if (prefix) {
+          document.getElementById('gh-tag').value = prefix;
+        }
       }
     });
 
@@ -654,12 +699,8 @@
         body: document.getElementById('gh-body').value.trim(),
       };
 
-      const missing = [];
-      if (!payload.token) missing.push('Personal access token');
-      if (!payload.repo)  missing.push('Repository');
-      if (!payload.tag)   missing.push('Tag name');
-      if (missing.length) {
-        ghResult.innerHTML = `<span style="color:#b23434">❌ Please fill in the required field(s): ${missing.join(', ')}</span>`;
+      if (!payload.tag && !currentAiracInfo) {
+        ghResult.innerHTML = '<span style="color:#b23434">❌ Tag name is required.</span>';
         return;
       }
 

@@ -16,12 +16,20 @@ import tempfile
 import threading
 import uuid
 import zipfile
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 import requests
 from flask import Flask, abort, jsonify, render_template, request, send_file
 
 app = Flask(__name__)
+
+# ---------------------------------------------------------------------------
+# Environment configuration
+# ---------------------------------------------------------------------------
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "").strip()
+GITHUB_REPO = os.environ.get("GITHUB_REPO", "").strip()
+AUTO_RELEASE = os.environ.get("AUTO_RELEASE", "false").strip().lower() == "true"
 
 # ---------------------------------------------------------------------------
 # In-memory job store
@@ -56,6 +64,12 @@ JOBS_BASE_DIR.mkdir(parents=True, exist_ok=True)
 # mirroring the pattern from the aip-02-26 release assets.
 RELEASE_FILENAME_RE = re.compile(r".+@airspaces-.+\.(txt|geojson)$")
 
+# New SIA delivery zip format: export_xml_bd_sia_YYYY-MM-DD-vXX.zip
+# where YYYY-MM-DD is the AIRAC effective date.
+ZIP_FILENAME_RE = re.compile(
+    r"export_xml_bd_sia_(\d{4})-(\d{2})-(\d{2})-v(\d{2})\.zip$"
+)
+
 # Allowed characters for the release prefix
 PREFIX_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
 ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-9;?]*[ -/]*[@-~]")
@@ -66,6 +80,58 @@ PROCESS_NICENESS = int(os.environ.get("POAFF_PROCESS_NICENESS", "10"))
 
 class ProcessingStopped(Exception):
     """Raised when a running job is stopped by user request."""
+
+
+# ---------------------------------------------------------------------------
+# AIRAC helpers
+# ---------------------------------------------------------------------------
+
+def _parse_airac_from_filename(filename: str) -> dict | None:
+    """Extract AIRAC cycle info from a SIA delivery zip filename.
+
+    Expected filename format:
+        export_xml_bd_sia_YYYY-MM-DD-vXX.zip
+
+    Returns a dict with tag, name, body, dates, cycle number, etc., or None
+    if the filename does not match.
+    """
+    m = ZIP_FILENAME_RE.match(filename)
+    if not m:
+        return None
+
+    year, month, day, _version = int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4))
+    start_date = date(year, month, day)
+    # AIRAC cycles are 28 days. The release description shows the inclusive
+    # validity window, so end = start + 27 days covers the full 28-day span.
+    end_date = start_date + timedelta(days=27)
+
+    # AIRAC cycle number: (day_of_year - 1) // 28 + 1
+    # This works because the filename always contains the actual AIRAC
+    # effective date (not an arbitrary date).
+    doy = start_date.timetuple().tm_yday
+    cycle = ((doy - 1) // 28) + 1
+    year_short = year % 100
+
+    tag = f"aip-{cycle:02d}-{year_short:02d}"
+    name = f"AIP {cycle:02d}/{year_short:02d}"
+    body = (
+        f"En vigueur du {start_date.strftime('%d/%m/%Y')} "
+        f"au {end_date.strftime('%d/%m/%Y')} inclus"
+    )
+
+    # Mark as latest if this cycle has not yet fully ended
+    is_latest = end_date >= date.today()
+
+    return {
+        "tag": tag,
+        "name": name,
+        "body": body,
+        "start_date": start_date,
+        "end_date": end_date,
+        "cycle": cycle,
+        "year_short": year_short,
+        "is_latest": is_latest,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -158,6 +224,9 @@ def _build_job_response(job: dict, since=None, full_snapshot: bool = False) -> d
         "progress": job.get("progress"),
         "reset_logs": reset_logs,
         "stop_requested": job.get("stop_requested", False),
+        "airac_info": job.get("airac_info"),
+        "release_result": job.get("release_result"),
+        "prefix": job.get("prefix"),
     }
 
 
@@ -182,6 +251,82 @@ def _terminate_process(proc: subprocess.Popen) -> None:
         os.killpg(proc.pid, signal.SIGTERM)
     except (AttributeError, OSError, ProcessLookupError, PermissionError):
         proc.terminate()
+
+
+def _create_github_release(
+    release_files: list,
+    github_token: str,
+    repo: str,
+    tag: str,
+    release_name: str,
+    release_body: str,
+    is_latest: bool = False,
+) -> dict:
+    """Create a GitHub release and upload airspace assets.
+
+    Returns a dict with 'release_url', 'uploaded', and 'failed' keys.
+    """
+    headers = {
+        "Authorization": f"token {github_token}",
+        "Accept": "application/vnd.github.v3+json",
+    }
+
+    payload = {
+        "tag_name": tag,
+        "name": release_name,
+        "body": release_body,
+    }
+    if is_latest:
+        payload["make_latest"] = "true"
+    else:
+        payload["make_latest"] = "false"
+
+    resp = requests.post(
+        f"https://api.github.com/repos/{repo}/releases",
+        json=payload,
+        headers=headers,
+        timeout=30,
+    )
+    if resp.status_code not in (200, 201):
+        return {"error": f"GitHub API error: {resp.text}"}
+
+    release_info = resp.json()
+    upload_url_base = (
+        f"https://uploads.github.com/repos/{repo}/releases/{release_info['id']}/assets"
+    )
+
+    uploaded = []
+    failed = []
+
+    for file_path in release_files:
+        content_type = {
+            ".geojson": "application/geo+json",
+            ".txt": "text/plain",
+            ".kml": "application/vnd.google-earth.kml+xml",
+        }.get(file_path.suffix.lower(), "application/octet-stream")
+
+        try:
+            with open(file_path, "rb") as fh:
+                up = requests.post(
+                    f"{upload_url_base}?name={file_path.name}",
+                    data=fh.read(),
+                    headers={**headers, "Content-Type": content_type},
+                    timeout=120,
+                )
+            if up.status_code in (200, 201):
+                uploaded.append(file_path.name)
+            else:
+                failed.append({"file": file_path.name, "error": up.text})
+        except Exception as exc:  # pylint: disable=broad-except
+            failed.append({"file": file_path.name, "error": str(exc)})
+
+    return {
+        "release_url": release_info["html_url"],
+        "uploaded_count": len(uploaded),
+        "failed_count": len(failed),
+        "uploaded": uploaded,
+        "failed": failed,
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -272,6 +417,45 @@ def _run_processing(job_id: str, zip_path: Path, job_dir: Path, prefix: str) -> 
         _append_job_log(job_id, "Processing completed successfully.")
         _set_job_status(job_id, "done")
 
+        # Auto-create GitHub release when configured
+        if AUTO_RELEASE and GITHUB_TOKEN and GITHUB_REPO:
+            _append_job_log(job_id, "Auto-creating GitHub release ...")
+            with jobs_lock:
+                job = jobs.get(job_id)
+                airac_info = job.get("airac_info") if job else None
+
+            tag = (airac_info["tag"] if airac_info
+                   else f"aip-{prefix}" if prefix and prefix != "global"
+                   else None)
+            if not tag:
+                _append_job_log(job_id, "WARNING: Could not derive tag for auto-release. Skipping.")
+            else:
+                release_name = airac_info["name"] if airac_info else tag
+                release_body = airac_info["body"] if airac_info else ""
+                is_latest = airac_info["is_latest"] if airac_info else False
+
+                result = _create_github_release(
+                    release_files=_collect_release_files(output_dir),
+                    github_token=GITHUB_TOKEN,
+                    repo=GITHUB_REPO,
+                    tag=tag,
+                    release_name=release_name,
+                    release_body=release_body,
+                    is_latest=is_latest,
+                )
+                if "error" in result:
+                    _append_job_log(job_id, f"ERROR: Auto-release failed: {result['error']}")
+                else:
+                    _append_job_log(
+                        job_id,
+                        f"✓ Release created: {result['release_url']} "
+                        f"({result['uploaded_count']} assets uploaded)"
+                    )
+                    with jobs_lock:
+                        j = jobs.get(job_id)
+                        if j:
+                            j["release_result"] = result
+
     except ProcessingStopped as exc:
         _append_job_log(job_id, str(exc))
         _set_job_status(job_id, "stopped")
@@ -324,6 +508,10 @@ def upload():
     zip_path = job_dir / safe_filename
     file.save(zip_path)
 
+    airac_info = _parse_airac_from_filename(safe_filename)
+    if airac_info and not prefix:
+        prefix = airac_info["tag"]
+
     with jobs_lock:
         jobs[job_id] = {
             "status": "processing",
@@ -334,6 +522,7 @@ def upload():
             "prefix": prefix or "global",
             "process": None,
             "stop_requested": False,
+            "airac_info": airac_info,
         }
 
     thread = threading.Thread(
@@ -343,7 +532,14 @@ def upload():
     )
     thread.start()
 
-    return jsonify({"job_id": job_id})
+    response_data = {"job_id": job_id}
+    if airac_info:
+        response_data["airac"] = {
+            "tag": airac_info["tag"],
+            "name": airac_info["name"],
+            "body": airac_info["body"],
+        }
+    return jsonify(response_data)
 
 
 @app.route("/status/<job_id>")
@@ -469,75 +665,57 @@ def create_release(job_id: str):
         return jsonify({"error": "Job not found or not yet completed."}), 400
 
     data = request.get_json(force=True, silent=True) or {}
-    github_token = data.get("token", "").strip()
-    repo = data.get("repo", "").strip()   # "owner/repo"
-    tag = data.get("tag", "").strip()
-    release_name = data.get("name", tag).strip()
-    release_body = data.get("body", "").strip()
 
-    if not github_token or not repo or not tag:
-        return jsonify({"error": "Fields 'token', 'repo', and 'tag' are required."}), 400
+    # Use env vars as fallback, request data takes precedence
+    github_token = data.get("token", "") or GITHUB_TOKEN
+    repo = data.get("repo", "") or GITHUB_REPO
+
+    if not github_token or not repo:
+        return jsonify({"error": "GitHub token and repo are required (set via env vars or request body)."}), 400
 
     if not re.match(r"^[a-zA-Z0-9_-]+/[a-zA-Z0-9._-]+$", repo):
         return jsonify({"error": "Invalid repository format. Use 'owner/repo'."}), 400
+
+    # Derive tag/name/body from AIRAC info when available
+    airac_info = job.get("airac_info")
+    tag = data.get("tag", "").strip()
+    if not tag and airac_info:
+        tag = airac_info["tag"]
+    elif not tag:
+        prefix = job.get("prefix", "")
+        tag = f"aip-{prefix}" if prefix and prefix != "global" else ""
+
+    release_name = data.get("name", "").strip() or (airac_info["name"] if airac_info else tag)
+    release_body = data.get("body", "").strip() or (airac_info["body"] if airac_info else "")
+    is_latest = airac_info["is_latest"] if airac_info else False
+
+    if not tag:
+        return jsonify({"error": "Tag name is required (set via request body or derive from filename)."}), 400
 
     output_dir = job["job_dir"] / "output"
     release_files = _collect_release_files(output_dir)
     if not release_files:
         return jsonify({"error": "No release files found matching the airspace pattern."}), 400
 
-    headers = {
-        "Authorization": f"token {github_token}",
-        "Accept": "application/vnd.github.v3+json",
-    }
-
-    # Create the release
-    resp = requests.post(
-        f"https://api.github.com/repos/{repo}/releases",
-        json={"tag_name": tag, "name": release_name, "body": release_body},
-        headers=headers,
-        timeout=30,
-    )
-    if resp.status_code not in (200, 201):
-        return jsonify({"error": f"GitHub API error: {resp.text}"}), 400
-
-    release_info = resp.json()
-    upload_url_base = (
-        f"https://uploads.github.com/repos/{repo}/releases/{release_info['id']}/assets"
+    result = _create_github_release(
+        release_files=release_files,
+        github_token=github_token,
+        repo=repo,
+        tag=tag,
+        release_name=release_name,
+        release_body=release_body,
+        is_latest=is_latest,
     )
 
-    uploaded = []
-    failed = []
+    if "error" in result:
+        return jsonify({"error": result["error"]}), 400
 
-    for file_path in release_files:
-        content_type = {
-            ".geojson": "application/geo+json",
-            ".txt": "text/plain",
-            ".kml": "application/vnd.google-earth.kml+xml",
-        }.get(file_path.suffix.lower(), "application/octet-stream")
+    with jobs_lock:
+        j = jobs.get(job_id)
+        if j:
+            j["release_result"] = result
 
-        try:
-            with open(file_path, "rb") as fh:
-                up = requests.post(
-                    f"{upload_url_base}?name={file_path.name}",
-                    data=fh.read(),
-                    headers={**headers, "Content-Type": content_type},
-                    timeout=120,
-                )
-            if up.status_code in (200, 201):
-                uploaded.append(file_path.name)
-            else:
-                failed.append({"file": file_path.name, "error": up.text})
-        except Exception as exc:  # pylint: disable=broad-except
-            failed.append({"file": file_path.name, "error": str(exc)})
-
-    return jsonify({
-        "release_url": release_info["html_url"],
-        "uploaded_count": len(uploaded),
-        "failed_count": len(failed),
-        "uploaded": uploaded,
-        "failed": failed,
-    })
+    return jsonify(result)
 
 
 if __name__ == "__main__":
