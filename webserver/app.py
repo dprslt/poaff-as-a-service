@@ -228,6 +228,7 @@ def _build_job_response(job: dict, since=None, full_snapshot: bool = False) -> d
         "airac_info": job.get("airac_info"),
         "release_result": job.get("release_result"),
         "prefix": job.get("prefix"),
+        "release_configured": job.get("release_config") is not None,
     }
 
 
@@ -418,44 +419,86 @@ def _run_processing(job_id: str, zip_path: Path, job_dir: Path, prefix: str) -> 
         _append_job_log(job_id, "Processing completed successfully.")
         _set_job_status(job_id, "done")
 
-        # Auto-create GitHub release when configured
-        if AUTO_RELEASE and GITHUB_TOKEN and GITHUB_REPO:
-            _append_job_log(job_id, "Auto-creating GitHub release ...")
-            with jobs_lock:
-                job = jobs.get(job_id)
-                airac_info = job.get("airac_info") if job else None
+        # Auto-create GitHub release when configured (from upload form or env vars)
+        with jobs_lock:
+            job_snapshot = jobs.get(job_id)
+            release_config = job_snapshot.get("release_config") if job_snapshot else None
+            airac_info = job_snapshot.get("airac_info") if job_snapshot else None
 
-            tag = (airac_info["tag"] if airac_info
+        should_release = (
+            release_config is not None
+            or (AUTO_RELEASE and GITHUB_TOKEN and GITHUB_REPO)
+        )
+
+        if should_release:
+            # Gather params: upload form config takes precedence, then env vars, then AIRAC
+            gh_token = (release_config["github_token"] if release_config and release_config.get("github_token")
+                        else GITHUB_TOKEN)
+            gh_repo = (release_config["github_repo"] if release_config and release_config.get("github_repo")
+                       else GITHUB_REPO)
+            tag = (release_config["tag"] if release_config and release_config.get("tag")
+                   else airac_info["tag"] if airac_info
                    else f"aip-{prefix}" if prefix and prefix != "global"
                    else None)
-            if not tag:
-                _append_job_log(job_id, "WARNING: Could not derive tag for auto-release. Skipping.")
-            else:
-                release_name = airac_info["name"] if airac_info else tag
-                release_body = airac_info["body"] if airac_info else ""
-                is_latest = airac_info["is_latest"] if airac_info else False
+            release_name = (release_config["name"] if release_config and release_config.get("name")
+                            else airac_info["name"] if airac_info
+                            else tag or "")
+            release_body = (release_config["body"] if release_config and release_config.get("body")
+                            else airac_info["body"] if airac_info
+                            else "")
+            is_latest = airac_info["is_latest"] if airac_info else False
 
-                result = _create_github_release(
-                    release_files=_collect_release_files(output_dir),
-                    github_token=GITHUB_TOKEN,
-                    repo=GITHUB_REPO,
-                    tag=tag,
-                    release_name=release_name,
-                    release_body=release_body,
-                    is_latest=is_latest,
+            if not gh_token or not gh_repo or not tag:
+                _append_job_log(
+                    job_id,
+                    "WARNING: Auto-release skipped — missing token, repo, or tag."
                 )
-                if "error" in result:
-                    _append_job_log(job_id, f"ERROR: Auto-release failed: {result['error']}")
-                else:
-                    _append_job_log(
-                        job_id,
-                        f"✓ Release created: {result['release_url']} "
-                        f"({result['uploaded_count']} assets uploaded)"
+            else:
+                _append_job_log(job_id, f"Auto-creating GitHub release {tag} ...")
+
+                already_exists = False
+                check_headers = {
+                    "Authorization": f"token {gh_token}",
+                    "Accept": "application/vnd.github.v3+json",
+                }
+                try:
+                    check = requests.get(
+                        f"https://api.github.com/repos/{gh_repo}/releases/tags/{tag}",
+                        headers=check_headers,
+                        timeout=15,
                     )
-                    with jobs_lock:
-                        j = jobs.get(job_id)
-                        if j:
-                            j["release_result"] = result
+                    if check.status_code == 200:
+                        existing = check.json()
+                        _append_job_log(
+                            job_id,
+                            f"WARNING: Tag {tag} already exists at {existing['html_url']}. Skipping."
+                        )
+                        already_exists = True
+                except requests.RequestException as exc:
+                    _append_job_log(job_id, f"WARNING: Could not check existing tags: {exc}")
+
+                if not already_exists:
+                    result = _create_github_release(
+                        release_files=_collect_release_files(output_dir),
+                        github_token=gh_token,
+                        repo=gh_repo,
+                        tag=tag,
+                        release_name=release_name,
+                        release_body=release_body,
+                        is_latest=is_latest,
+                    )
+                    if "error" in result:
+                        _append_job_log(job_id, f"ERROR: Auto-release failed: {result['error']}")
+                    else:
+                        _append_job_log(
+                            job_id,
+                            f"✓ Release created: {result['release_url']} "
+                            f"({result['uploaded_count']} assets uploaded)"
+                        )
+                        with jobs_lock:
+                            j = jobs.get(job_id)
+                            if j:
+                                j["release_result"] = result
 
     except ProcessingStopped as exc:
         _append_job_log(job_id, str(exc))
@@ -513,6 +556,24 @@ def upload():
     if airac_info and not prefix:
         prefix = airac_info["tag"]
 
+    # Optional release config from the upload form
+    release_config = None
+    if request.form.get("publish_release", "").strip().lower() == "true":
+        release_config = {
+            "github_token": GITHUB_TOKEN,
+            "github_repo": request.form.get("github_repo", "").strip() or GITHUB_REPO,
+            "tag": request.form.get("release_tag", "").strip(),
+            "name": request.form.get("release_name", "").strip(),
+            "body": request.form.get("release_body", "").strip(),
+        }
+        # Derive tag/name/body from AIRAC if not provided in the form
+        if not release_config["tag"] and airac_info:
+            release_config["tag"] = airac_info["tag"]
+        if not release_config["name"]:
+            release_config["name"] = airac_info["name"] if airac_info else release_config["tag"]
+        if not release_config["body"]:
+            release_config["body"] = airac_info["body"] if airac_info else ""
+
     with jobs_lock:
         jobs[job_id] = {
             "status": "processing",
@@ -524,6 +585,7 @@ def upload():
             "process": None,
             "stop_requested": False,
             "airac_info": airac_info,
+            "release_config": release_config,
         }
 
     thread = threading.Thread(
@@ -667,8 +729,7 @@ def create_release(job_id: str):
 
     data = request.get_json(force=True, silent=True) or {}
 
-    # Use env vars as fallback, request data takes precedence
-    github_token = data.get("token", "") or GITHUB_TOKEN
+    github_token = GITHUB_TOKEN
     repo = data.get("repo", "") or GITHUB_REPO
 
     if not github_token or not repo:

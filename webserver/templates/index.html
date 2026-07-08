@@ -157,10 +157,13 @@
       transition: border-color .2s ease, box-shadow .2s ease;
     }
 
-    input[type=text]:focus {
+    input[type=text]:focus,
+    select:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 4px rgba(29, 124, 214, 0.12);
     }
+    select { cursor: pointer; }
+    select option { padding: 0.3rem 0.5rem; }
 
     .btn-row {
       display: flex;
@@ -332,6 +335,38 @@
           <input type="text" id="prefix-input" placeholder="global" />
         </div>
 
+        <div class="field" style="margin-top: 0.75rem;">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:650;">
+            <input type="checkbox" id="publish-check" />
+            Publish GitHub release when done
+          </label>
+        </div>
+
+        <div id="upload-release-config" class="hidden" style="margin-top:0.5rem;">
+          <div class="field">
+            <label for="gh-repo-upload">Repository <span class="label-hint">(owner/repo, leave empty if pre-configured)</span></label>
+            <input type="text" id="gh-repo-upload" placeholder="dprslt/poaff-as-a-service" />
+          </div>
+          <div class="field">
+            <label for="gh-cycle-upload">AIRAC cycle <span class="label-hint">(auto-filled from filename)</span></label>
+            <select id="gh-cycle-upload" style="width:100%;padding:0.7rem 0.85rem;border:1px solid #c7d5e3;border-radius:10px;background:rgba(255,255,255,0.9);color:var(--text-main);font-size:0.96rem;outline:none;">
+              <option value="">Select AIRAC cycle …</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="gh-tag-upload">Tag name <span class="label-hint">(auto-filled)</span></label>
+            <input type="text" id="gh-tag-upload" readonly style="background:#eef2f6;" />
+          </div>
+          <div class="field">
+            <label for="gh-name-upload">Release title <span class="label-hint">(auto-filled)</span></label>
+            <input type="text" id="gh-name-upload" readonly style="background:#eef2f6;" />
+          </div>
+          <div class="field">
+            <label for="gh-body-upload">Description</label>
+            <input type="text" id="gh-body-upload" placeholder="En vigueur du … au … inclus" />
+          </div>
+        </div>
+
         <div class="btn-row">
           <button class="btn-primary" id="upload-btn" disabled>🚀 Start processing</button>
         </div>
@@ -372,13 +407,9 @@
           <div>
             <h2>3 · Publish GitHub release</h2>
           </div>
-          <p>Create a release directly from the completed job output. Token and repo can be pre-configured via environment variables.</p>
+          <p>Create a release directly from the completed job output. The token is pre-configured. Set the repo below or leave empty to use the default.</p>
         </div>
 
-        <div class="field">
-          <label for="gh-token">Personal access token <span class="label-hint">(leave empty if pre-configured)</span></label>
-          <input type="text" id="gh-token" placeholder="ghp_…" autocomplete="off" />
-        </div>
         <div class="field">
           <label for="gh-repo">Repository <span class="label-hint">(owner/repo, leave empty if pre-configured)</span></label>
           <input type="text" id="gh-repo" placeholder="dprslt/poaff-as-a-service" />
@@ -423,12 +454,18 @@
     const ghPanel = document.getElementById('gh-panel');
     const publishBtn = document.getElementById('publish-btn');
     const ghResult = document.getElementById('gh-result');
+    const publishCheck = document.getElementById('publish-check');
+    const uploadReleaseConfig = document.getElementById('upload-release-config');
 
     let currentJobId = null;
     let pollTimer = null;
     let lastLogCount = 0;
     let isProcessing = false;
     let currentAiracInfo = null;
+
+    publishCheck.addEventListener('change', () => {
+      uploadReleaseConfig.classList.toggle('hidden', !publishCheck.checked);
+    });
 
     (async function loadCurrentJobStatus() {
       try {
@@ -464,6 +501,50 @@
       }
     });
 
+    function populateAiracDropdown(year, selectedDate) {
+      const select = document.getElementById('gh-cycle-upload');
+      select.innerHTML = '<option value="">Select AIRAC cycle \u2026</option>';
+      let selectedIdx = -1;
+      for (let n = 0; n < 14; n++) {
+        const start = new Date(year, 0, 1 + n * 28);
+        const end = new Date(start);
+        end.setDate(end.getDate() + 27);
+        const cycle = n + 1;
+        const zy = String(cycle).padStart(2, '0');
+        const ys = String(year % 100).padStart(2, '0');
+        const tag = 'aip-' + zy + '-' + ys;
+        const name = 'AIP ' + zy + '/' + ys;
+        const sd = String(start.getDate()).padStart(2, '0');
+        const sm = String(start.getMonth() + 1).padStart(2, '0');
+        const ed = String(end.getDate()).padStart(2, '0');
+        const em = String(end.getMonth() + 1).padStart(2, '0');
+        const body = 'En vigueur du ' + sd + '/' + sm + '/' + year +
+                     ' au ' + ed + '/' + em + '/' + end.getFullYear() + ' inclus';
+        const opt = document.createElement('option');
+        opt.value = tag;
+        opt.dataset.name = name;
+        opt.dataset.body = body;
+        opt.textContent = name + ' \u00B7 ' + sd + '/' + sm + ' - ' + ed + '/' + em;
+        select.appendChild(opt);
+        if (selectedDate && start <= selectedDate && selectedDate <= end) {
+          selectedIdx = n;
+        }
+      }
+      if (selectedIdx >= 0) {
+        select.selectedIndex = selectedIdx + 1;
+        select.dispatchEvent(new Event('change'));
+      }
+    }
+
+    document.getElementById('gh-cycle-upload').addEventListener('change', function () {
+      const opt = this.options[this.selectedIndex];
+      if (opt && opt.value) {
+        document.getElementById('gh-tag-upload').value = opt.value;
+        document.getElementById('gh-name-upload').value = opt.dataset.name || '';
+        document.getElementById('gh-body-upload').value = opt.dataset.body || '';
+      }
+    });
+
     function setFile(file) {
       fileInput._file = file;
       fileNameEl.textContent = `📦 ${file.name}`;
@@ -472,17 +553,16 @@
       }
       const match = file.name.match(/^export_xml_bd_sia_(\d{4})-(\d{2})-(\d{2})/);
       if (match) {
-        const [, year, month, day] = match.map(Number);
+        const vals = match.map(Number);
+        const year = vals[1], month = vals[2], day = vals[3];
         const d = new Date(year, month - 1, day);
         const startMs = d.getTime();
         const yearStart = new Date(year, 0, 0).getTime();
         const doy = Math.floor((startMs - yearStart) / 86400000);
         const cycle = Math.floor((doy - 1) / 28) + 1;
         const ys = year % 100;
-        const tag = 'aip-' +
-          String(cycle).padStart(2, '0') + '-' +
-          String(ys).padStart(2, '0');
-        prefixInput.value = tag;
+        prefixInput.value = 'aip-' + String(cycle).padStart(2, '0') + '-' + String(ys).padStart(2, '0');
+        populateAiracDropdown(year, d);
       }
     }
 
@@ -501,6 +581,20 @@
       const formData = new FormData();
       formData.append('file', file);
       formData.append('prefix', prefixInput.value.trim());
+      if (publishCheck.checked) {
+        formData.append('publish_release', 'true');
+        const repo = document.getElementById('gh-repo-upload').value.trim();
+        const tag = document.getElementById('gh-tag-upload').value.trim();
+        const name = document.getElementById('gh-name-upload').value.trim();
+        const body = document.getElementById('gh-body-upload').value.trim();
+        if (repo)  formData.append('github_repo', repo);
+        if (tag)   formData.append('release_tag', tag);
+        if (name)  formData.append('release_name', name);
+        if (body)  formData.append('release_body', body);
+      }
+      if (!tag) {
+        formData.delete('publish_release');
+      }
 
       try {
         const resp = await fetch('/upload', { method: 'POST', body: formData });
@@ -611,8 +705,9 @@
       }
 
       const isDone = data.status === 'done';
+      const releaseConfigured = data.release_configured;
       downloadBtn.classList.toggle('hidden', !isDone);
-      releaseBtn.classList.toggle('hidden', !isDone);
+      releaseBtn.classList.toggle('hidden', !isDone || releaseConfigured);
       ghPanel.classList.add('hidden');
       if (!isDone) {
         ghPanel.style.display = 'none';
@@ -692,7 +787,6 @@
 
     publishBtn.addEventListener('click', async () => {
       const payload = {
-        token: document.getElementById('gh-token').value.trim(),
         repo: document.getElementById('gh-repo').value.trim(),
         tag: document.getElementById('gh-tag').value.trim(),
         name: document.getElementById('gh-name').value.trim(),
