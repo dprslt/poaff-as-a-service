@@ -331,8 +331,15 @@
         </div>
 
         <div class="field">
-          <label for="prefix-input">Release prefix <span class="label-hint">(e.g. sia0226-1902-1803)</span></label>
+          <label for="prefix-input">Release prefix <span class="label-hint">(auto-filled from cycle)</span></label>
           <input type="text" id="prefix-input" placeholder="global" />
+        </div>
+
+        <div class="field">
+          <label for="gh-cycle-upload">AIRAC cycle <span class="label-hint">(auto-filled from filename)</span></label>
+          <select id="gh-cycle-upload" style="width:100%;padding:0.7rem 0.85rem;border:1px solid #c7d5e3;border-radius:10px;background:rgba(255,255,255,0.9);color:var(--text-main);font-size:0.96rem;outline:none;">
+            <option value="">Select AIRAC cycle …</option>
+          </select>
         </div>
 
         <div class="field" style="margin-top: 0.75rem;">
@@ -346,12 +353,6 @@
           <div class="field">
             <label for="gh-repo-upload">Repository <span class="label-hint">(owner/repo, leave empty if pre-configured)</span></label>
             <input type="text" id="gh-repo-upload" placeholder="dprslt/poaff-as-a-service" />
-          </div>
-          <div class="field">
-            <label for="gh-cycle-upload">AIRAC cycle <span class="label-hint">(auto-filled from filename)</span></label>
-            <select id="gh-cycle-upload" style="width:100%;padding:0.7rem 0.85rem;border:1px solid #c7d5e3;border-radius:10px;background:rgba(255,255,255,0.9);color:var(--text-main);font-size:0.96rem;outline:none;">
-              <option value="">Select AIRAC cycle …</option>
-            </select>
           </div>
           <div class="field">
             <label for="gh-tag-upload">Tag name <span class="label-hint">(auto-filled)</span></label>
@@ -467,6 +468,8 @@
       uploadReleaseConfig.classList.toggle('hidden', !publishCheck.checked);
     });
 
+    populateAiracDropdown(new Date().getFullYear());
+
     (async function loadCurrentJobStatus() {
       try {
         const resp = await fetch('/current');
@@ -539,6 +542,7 @@
     document.getElementById('gh-cycle-upload').addEventListener('change', function () {
       const opt = this.options[this.selectedIndex];
       if (opt && opt.value) {
+        prefixInput.value = opt.value;
         document.getElementById('gh-tag-upload').value = opt.value;
         document.getElementById('gh-name-upload').value = opt.dataset.name || '';
         document.getElementById('gh-body-upload').value = opt.dataset.body || '';
@@ -556,12 +560,6 @@
         const vals = match.map(Number);
         const year = vals[1], month = vals[2], day = vals[3];
         const d = new Date(year, month - 1, day);
-        const startMs = d.getTime();
-        const yearStart = new Date(year, 0, 0).getTime();
-        const doy = Math.floor((startMs - yearStart) / 86400000);
-        const cycle = Math.floor((doy - 1) / 28) + 1;
-        const ys = year % 100;
-        prefixInput.value = 'aip-' + String(cycle).padStart(2, '0') + '-' + String(ys).padStart(2, '0');
         populateAiracDropdown(year, d);
       }
     }
