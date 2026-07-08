@@ -18,6 +18,7 @@ import uuid
 import zipfile
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from typing import Optional
 
 import requests
 from flask import Flask, abort, jsonify, render_template, request, send_file
@@ -86,7 +87,7 @@ class ProcessingStopped(Exception):
 # AIRAC helpers
 # ---------------------------------------------------------------------------
 
-def _parse_airac_from_filename(filename: str) -> dict | None:
+def _parse_airac_from_filename(filename: str) -> Optional[dict]:
     """Extract AIRAC cycle info from a SIA delivery zip filename.
 
     Expected filename format:
