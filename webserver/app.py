@@ -102,15 +102,16 @@ def _parse_airac_from_filename(filename: str) -> Optional[dict]:
 
     year, month, day, _version = int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4))
     start_date = date(year, month, day)
-    # AIRAC cycles are 28 days. The release description shows the inclusive
-    # validity window, so end = start + 27 days covers the full 28-day span.
     end_date = start_date + timedelta(days=27)
 
-    # AIRAC cycle number: (day_of_year - 1) // 28 + 1
-    # This works because the filename always contains the actual AIRAC
-    # effective date (not an arbitrary date).
-    doy = start_date.timetuple().tm_yday
-    cycle = ((doy - 1) // 28) + 1
+    # AIRAC cycles: 28-day cycles from epoch 1901-01-10
+    epoch = date(1901, 1, 10)
+    jan1 = date(year, 1, 1)
+    days_since_epoch = (jan1 - epoch).days
+    offset = days_since_epoch % 28
+    first_of_year = jan1 if offset == 0 else jan1 + timedelta(days=28 - offset)
+    delta_in_year = (start_date - first_of_year).days
+    cycle = (delta_in_year // 28) + 1
     year_short = year % 100
 
     tag = f"aip-{cycle:02d}-{year_short:02d}"

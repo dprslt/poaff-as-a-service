@@ -331,15 +331,15 @@
         </div>
 
         <div class="field">
-          <label for="prefix-input">Release prefix <span class="label-hint">(auto-filled from cycle)</span></label>
-          <input type="text" id="prefix-input" placeholder="global" />
-        </div>
-
-        <div class="field">
-          <label for="gh-cycle-upload">AIRAC cycle <span class="label-hint">(auto-filled from filename)</span></label>
+          <label for="gh-cycle-upload">AIRAC cycle</label>
           <select id="gh-cycle-upload" style="width:100%;padding:0.7rem 0.85rem;border:1px solid #c7d5e3;border-radius:10px;background:rgba(255,255,255,0.9);color:var(--text-main);font-size:0.96rem;outline:none;">
             <option value="">Select AIRAC cycle …</option>
           </select>
+        </div>
+
+        <div class="field">
+          <label for="prefix-input">Release prefix <span class="label-hint">(auto-filled from cycle)</span></label>
+          <input type="text" id="prefix-input" placeholder="global" />
         </div>
 
         <div class="field" style="margin-top: 0.75rem;">
@@ -504,12 +504,32 @@
       }
     });
 
+    function firstAiracStart(year) {
+      const msPerDay = 86400000;
+      const epoch = Date.UTC(1901, 0, 10);
+      const jan1 = Date.UTC(year, 0, 1);
+      const daysSinceEpoch = Math.floor((jan1 - epoch) / msPerDay);
+      const offset = daysSinceEpoch % 28;
+      return new Date(year, 0, 1 + (offset === 0 ? 0 : 28 - offset));
+    }
+
+    function formatDate(d) {
+      return String(d.getDate()).padStart(2, '0') + '/' +
+             String(d.getMonth() + 1).padStart(2, '0') + '/' +
+             d.getFullYear();
+    }
+
     function populateAiracDropdown(year, selectedDate) {
       const select = document.getElementById('gh-cycle-upload');
       select.innerHTML = '<option value="">Select AIRAC cycle \u2026</option>';
       let selectedIdx = -1;
-      for (let n = 0; n < 14; n++) {
-        const start = new Date(year, 0, 1 + n * 28);
+      const first = firstAiracStart(year);
+      const jan1Next = new Date(year + 1, 0, 1);
+      const totalDays = Math.floor((jan1Next - first) / 86400000);
+      const numCycles = Math.ceil(totalDays / 28);
+      for (let n = 0; n < numCycles; n++) {
+        const start = new Date(first);
+        start.setDate(start.getDate() + n * 28);
         const end = new Date(start);
         end.setDate(end.getDate() + 27);
         const cycle = n + 1;
@@ -517,17 +537,17 @@
         const ys = String(year % 100).padStart(2, '0');
         const tag = 'aip-' + zy + '-' + ys;
         const name = 'AIP ' + zy + '/' + ys;
-        const sd = String(start.getDate()).padStart(2, '0');
-        const sm = String(start.getMonth() + 1).padStart(2, '0');
-        const ed = String(end.getDate()).padStart(2, '0');
-        const em = String(end.getMonth() + 1).padStart(2, '0');
-        const body = 'En vigueur du ' + sd + '/' + sm + '/' + year +
-                     ' au ' + ed + '/' + em + '/' + end.getFullYear() + ' inclus';
+        const body = 'En vigueur du ' + formatDate(start) +
+                     ' au ' + formatDate(end) + ' inclus';
         const opt = document.createElement('option');
         opt.value = tag;
         opt.dataset.name = name;
         opt.dataset.body = body;
-        opt.textContent = name + ' \u00B7 ' + sd + '/' + sm + ' - ' + ed + '/' + em;
+        opt.textContent = name + ' \u00B7 ' +
+          String(start.getDate()).padStart(2, '0') + '/' +
+          String(start.getMonth() + 1).padStart(2, '0') + ' - ' +
+          String(end.getDate()).padStart(2, '0') + '/' +
+          String(end.getMonth() + 1).padStart(2, '0');
         select.appendChild(opt);
         if (selectedDate && start <= selectedDate && selectedDate <= end) {
           selectedIdx = n;
