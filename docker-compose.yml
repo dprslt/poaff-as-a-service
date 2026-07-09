@@ -6,6 +6,13 @@ services:
     image: dprslt/poaff-web
     ports:
       - "5000:5000"
+    environment:
+      # GitHub release configuration
+      # Set GITHUB_TOKEN and GITHUB_REPO for manual release publishing
+      # Set AUTO_RELEASE=true to publish automatically after processing
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=${GITHUB_REPO:-}
+      - AUTO_RELEASE=${AUTO_RELEASE:-false}
     volumes:
       # Optional: persist job output between container restarts
       - poaff_jobs:/tmp/poaff_jobs

@@ -157,10 +157,13 @@
       transition: border-color .2s ease, box-shadow .2s ease;
     }
 
-    input[type=text]:focus {
+    input[type=text]:focus,
+    select:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 4px rgba(29, 124, 214, 0.12);
     }
+    select { cursor: pointer; }
+    select option { padding: 0.3rem 0.5rem; }
 
     .btn-row {
       display: flex;
@@ -328,8 +331,41 @@
         </div>
 
         <div class="field">
-          <label for="prefix-input">Release prefix <span class="label-hint">(e.g. sia0226-1902-1803)</span></label>
+          <label for="gh-cycle-upload">AIRAC cycle</label>
+          <select id="gh-cycle-upload" style="width:100%;padding:0.7rem 0.85rem;border:1px solid #c7d5e3;border-radius:10px;background:rgba(255,255,255,0.9);color:var(--text-main);font-size:0.96rem;outline:none;">
+            <option value="">Select AIRAC cycle …</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="prefix-input">Release prefix <span class="label-hint">(auto-filled from cycle)</span></label>
           <input type="text" id="prefix-input" placeholder="global" />
+        </div>
+
+        <div class="field" style="margin-top: 0.75rem;">
+          <label style="display:flex;align-items:center;gap:0.5rem;cursor:pointer;font-weight:650;">
+            <input type="checkbox" id="publish-check" />
+            Publish GitHub release when done
+          </label>
+        </div>
+
+        <div id="upload-release-config" class="hidden" style="margin-top:0.5rem;">
+          <div class="field">
+            <label for="gh-repo-upload">Repository <span class="label-hint">(owner/repo, leave empty if pre-configured)</span></label>
+            <input type="text" id="gh-repo-upload" placeholder="dprslt/poaff-as-a-service" />
+          </div>
+          <div class="field">
+            <label for="gh-tag-upload">Tag name <span class="label-hint">(auto-filled)</span></label>
+            <input type="text" id="gh-tag-upload" readonly style="background:#eef2f6;" />
+          </div>
+          <div class="field">
+            <label for="gh-name-upload">Release title <span class="label-hint">(auto-filled)</span></label>
+            <input type="text" id="gh-name-upload" readonly style="background:#eef2f6;" />
+          </div>
+          <div class="field">
+            <label for="gh-body-upload">Description</label>
+            <input type="text" id="gh-body-upload" placeholder="En vigueur du … au … inclus" />
+          </div>
         </div>
 
         <div class="btn-row">
@@ -372,15 +408,11 @@
           <div>
             <h2>3 · Publish GitHub release</h2>
           </div>
-          <p>Create a release directly from the completed job output.</p>
+          <p>Create a release directly from the completed job output. The token is pre-configured. Set the repo below or leave empty to use the default.</p>
         </div>
 
         <div class="field">
-          <label for="gh-token">Personal access token <span class="label-hint">(repo scope)</span></label>
-          <input type="text" id="gh-token" placeholder="ghp_…" autocomplete="off" />
-        </div>
-        <div class="field">
-          <label for="gh-repo">Repository <span class="label-hint">(owner/repo)</span></label>
+          <label for="gh-repo">Repository <span class="label-hint">(owner/repo, leave empty if pre-configured)</span></label>
           <input type="text" id="gh-repo" placeholder="dprslt/poaff-as-a-service" />
         </div>
         <div class="field">
@@ -423,11 +455,20 @@
     const ghPanel = document.getElementById('gh-panel');
     const publishBtn = document.getElementById('publish-btn');
     const ghResult = document.getElementById('gh-result');
+    const publishCheck = document.getElementById('publish-check');
+    const uploadReleaseConfig = document.getElementById('upload-release-config');
 
     let currentJobId = null;
     let pollTimer = null;
     let lastLogCount = 0;
     let isProcessing = false;
+    let currentAiracInfo = null;
+
+    publishCheck.addEventListener('change', () => {
+      uploadReleaseConfig.classList.toggle('hidden', !publishCheck.checked);
+    });
+
+    populateAiracDropdown(new Date().getFullYear());
 
     (async function loadCurrentJobStatus() {
       try {
@@ -463,11 +504,83 @@
       }
     });
 
+    function firstAiracStart(year) {
+      const msPerDay = 86400000;
+      const epoch = Date.UTC(1901, 0, 10);
+      const jan1 = Date.UTC(year, 0, 1);
+      const daysSinceEpoch = Math.floor((jan1 - epoch) / msPerDay);
+      const offset = daysSinceEpoch % 28;
+      return new Date(year, 0, 1 + (offset === 0 ? 0 : 28 - offset));
+    }
+
+    function formatDate(d) {
+      return String(d.getDate()).padStart(2, '0') + '/' +
+             String(d.getMonth() + 1).padStart(2, '0') + '/' +
+             d.getFullYear();
+    }
+
+    function populateAiracDropdown(year, selectedDate) {
+      const select = document.getElementById('gh-cycle-upload');
+      select.innerHTML = '<option value="">Select AIRAC cycle \u2026</option>';
+      let selectedIdx = -1;
+      const first = firstAiracStart(year);
+      const jan1Next = new Date(year + 1, 0, 1);
+      const totalDays = Math.floor((jan1Next - first) / 86400000);
+      const numCycles = Math.ceil(totalDays / 28);
+      for (let n = 0; n < numCycles; n++) {
+        const start = new Date(first);
+        start.setDate(start.getDate() + n * 28);
+        const end = new Date(start);
+        end.setDate(end.getDate() + 27);
+        const cycle = n + 1;
+        const zy = String(cycle).padStart(2, '0');
+        const ys = String(year % 100).padStart(2, '0');
+        const tag = 'aip-' + zy + '-' + ys;
+        const name = 'AIP ' + zy + '/' + ys;
+        const body = 'En vigueur du ' + formatDate(start) +
+                     ' au ' + formatDate(end) + ' inclus';
+        const opt = document.createElement('option');
+        opt.value = tag;
+        opt.dataset.name = name;
+        opt.dataset.body = body;
+        opt.textContent = name + ' \u00B7 ' +
+          String(start.getDate()).padStart(2, '0') + '/' +
+          String(start.getMonth() + 1).padStart(2, '0') + ' - ' +
+          String(end.getDate()).padStart(2, '0') + '/' +
+          String(end.getMonth() + 1).padStart(2, '0');
+        select.appendChild(opt);
+        if (selectedDate && start <= selectedDate && selectedDate <= end) {
+          selectedIdx = n;
+        }
+      }
+      if (selectedIdx >= 0) {
+        select.selectedIndex = selectedIdx + 1;
+        select.dispatchEvent(new Event('change'));
+      }
+    }
+
+    document.getElementById('gh-cycle-upload').addEventListener('change', function () {
+      const opt = this.options[this.selectedIndex];
+      if (opt && opt.value) {
+        prefixInput.value = opt.value;
+        document.getElementById('gh-tag-upload').value = opt.value;
+        document.getElementById('gh-name-upload').value = opt.dataset.name || '';
+        document.getElementById('gh-body-upload').value = opt.dataset.body || '';
+      }
+    });
+
     function setFile(file) {
       fileInput._file = file;
       fileNameEl.textContent = `📦 ${file.name}`;
       if (!isProcessing) {
         uploadBtn.disabled = false;
+      }
+      const match = file.name.match(/^export_xml_bd_sia_(\d{4})-(\d{2})-(\d{2})/);
+      if (match) {
+        const vals = match.map(Number);
+        const year = vals[1], month = vals[2], day = vals[3];
+        const d = new Date(year, month - 1, day);
+        populateAiracDropdown(year, d);
       }
     }
 
@@ -486,6 +599,20 @@
       const formData = new FormData();
       formData.append('file', file);
       formData.append('prefix', prefixInput.value.trim());
+      if (publishCheck.checked) {
+        formData.append('publish_release', 'true');
+        const repo = document.getElementById('gh-repo-upload').value.trim();
+        const tag = document.getElementById('gh-tag-upload').value.trim();
+        const name = document.getElementById('gh-name-upload').value.trim();
+        const body = document.getElementById('gh-body-upload').value.trim();
+        if (repo)  formData.append('github_repo', repo);
+        if (tag)   formData.append('release_tag', tag);
+        if (name)  formData.append('release_name', name);
+        if (body)  formData.append('release_body', body);
+      }
+      if (!tag) {
+        formData.delete('publish_release');
+      }
 
       try {
         const resp = await fetch('/upload', { method: 'POST', body: formData });
@@ -591,12 +718,34 @@
       setStatus(data.status, data.stop_requested);
       updateLogMeta(data.status, data.stop_requested);
 
+      if (data.airac_info) {
+        currentAiracInfo = data.airac_info;
+      }
+
       const isDone = data.status === 'done';
+      const releaseConfigured = data.release_configured;
       downloadBtn.classList.toggle('hidden', !isDone);
-      releaseBtn.classList.toggle('hidden', !isDone);
+      releaseBtn.classList.toggle('hidden', !isDone || releaseConfigured);
       ghPanel.classList.add('hidden');
       if (!isDone) {
         ghPanel.style.display = 'none';
+      }
+
+      const releaseResult = data.release_result;
+      if (isDone && releaseResult) {
+        ghPanel.classList.add('hidden');
+        ghPanel.style.display = 'none';
+        releaseBtn.classList.add('hidden');
+        if (releaseResult.release_url) {
+          ghResult.innerHTML =
+            '<div style="margin-top:0.75rem;padding:0.75rem 1rem;background:#eefbf3;border-radius:12px;font-size:0.92rem;">' +
+            '<span style="color:#1d6847;font-weight:700;">✓ GitHub release published</span><br>' +
+            '<a href="' + releaseResult.release_url + '" target="_blank" rel="noreferrer">' +
+            releaseResult.release_url + '</a><br>' +
+            '<span style="color:#5d7083">' + releaseResult.uploaded_count + ' asset(s) uploaded' +
+            (releaseResult.failed_count ? ', <span style="color:#b23434">' + releaseResult.failed_count + ' failed</span>' : '') +
+            '</span></div>';
+        }
       }
 
       if (data.status === 'processing') {
@@ -609,10 +758,12 @@
     function clearJobDisplay(logStart = 0) {
       logBox.innerHTML = '';
       lastLogCount = logStart;
+      currentAiracInfo = null;
       downloadBtn.classList.add('hidden');
       releaseBtn.classList.add('hidden');
       ghPanel.classList.add('hidden');
       ghPanel.style.display = 'none';
+      document.getElementById('gh-result').innerHTML = '';
       updateLogMeta('idle', false);
     }
 
@@ -639,27 +790,29 @@
       ghPanel.classList.remove('hidden');
       ghPanel.style.display = 'block';
       ghPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      const prefix = prefixInput.value.trim();
-      if (prefix) {
-        document.getElementById('gh-tag').value = prefix;
+      const airac = currentAiracInfo;
+      if (airac) {
+        document.getElementById('gh-tag').value = airac.tag || '';
+        document.getElementById('gh-name').value = airac.name || '';
+        document.getElementById('gh-body').value = airac.body || '';
+      } else {
+        const prefix = prefixInput.value.trim();
+        if (prefix) {
+          document.getElementById('gh-tag').value = prefix;
+        }
       }
     });
 
     publishBtn.addEventListener('click', async () => {
       const payload = {
-        token: document.getElementById('gh-token').value.trim(),
         repo: document.getElementById('gh-repo').value.trim(),
         tag: document.getElementById('gh-tag').value.trim(),
         name: document.getElementById('gh-name').value.trim(),
         body: document.getElementById('gh-body').value.trim(),
       };
 
-      const missing = [];
-      if (!payload.token) missing.push('Personal access token');
-      if (!payload.repo)  missing.push('Repository');
-      if (!payload.tag)   missing.push('Tag name');
-      if (missing.length) {
-        ghResult.innerHTML = `<span style="color:#b23434">❌ Please fill in the required field(s): ${missing.join(', ')}</span>`;
+      if (!payload.tag && !currentAiracInfo) {
+        ghResult.innerHTML = '<span style="color:#b23434">❌ Tag name is required.</span>';
         return;
       }
 

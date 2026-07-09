@@ -55,6 +55,32 @@ docker run --rm -p 5000:5000 dprslt/poaff-web
    files (`.geojson` and `.txt` matching the `*@airspaces-*` pattern) are
    uploaded as release assets — log files and catalogues are excluded.
 
+### Auto‑release (GitHub)
+
+If you run behind a secured proxy and want the entire E2E workflow to be fully
+automatic, set these environment variables:
+
+| Variable | Purpose |
+|---|---|
+| `GITHUB_TOKEN` | GitHub personal access token with `repo` scope |
+| `GITHUB_REPO` | Target repository in `owner/repo` format |
+| `AUTO_RELEASE` | Set to `true` to publish a release **automatically** after each successful processing run |
+
+When `AUTO_RELEASE=true`, the web server will:
+
+1. Detect the filename format `export_xml_bd_sia_YYYY-MM-DD-vXX.zip`
+2. Derive the AIRAC cycle number from the date in the filename
+3. Create a GitHub release with the correct tag (`aip-XX-YY`), title (`AIP XX/YY`),
+   and description (`En vigueur du … au … inclus`)
+4. Mark it as **latest** if the cycle is still current or upcoming
+5. Upload all airspace output files (`.geojson`, `.txt`) as release assets
+
+No manual token entry, tag selection, or form filling is needed — everything
+flows from the filename.
+
+> **Note:** The legacy manual release form is still available when env vars are
+> not set, and the fields are pre‑filled when an AIRAC filename is detected.
+
 ### Option B – CLI / Docker (headless)
 
 The headless image is built from `Dockerfile` and published by CI as `dprslt/poaff`.
