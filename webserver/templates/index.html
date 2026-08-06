@@ -599,10 +599,11 @@
       const formData = new FormData();
       formData.append('file', file);
       formData.append('prefix', prefixInput.value.trim());
+      let tag = '';
       if (publishCheck.checked) {
         formData.append('publish_release', 'true');
         const repo = document.getElementById('gh-repo-upload').value.trim();
-        const tag = document.getElementById('gh-tag-upload').value.trim();
+        tag = document.getElementById('gh-tag-upload').value.trim();
         const name = document.getElementById('gh-name-upload').value.trim();
         const body = document.getElementById('gh-body-upload').value.trim();
         if (repo)  formData.append('github_repo', repo);
