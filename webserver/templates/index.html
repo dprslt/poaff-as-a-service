@@ -468,6 +468,18 @@
       uploadReleaseConfig.classList.toggle('hidden', !publishCheck.checked);
     });
 
+    window.addEventListener('error', (event) => {
+      const msg = (event.message || 'Unknown script error') +
+        (event.filename ? ' (' + event.filename.split('/').pop() + ':' + event.lineno + ')' : '');
+      appendLog('ERROR: ' + msg, true);
+    });
+
+    window.addEventListener('unhandledrejection', (event) => {
+      const reason = event.reason;
+      const msg = (reason && reason.message) ? reason.message : String(reason || 'Unhandled promise rejection');
+      appendLog('ERROR: ' + msg, true);
+    });
+
     populateAiracDropdown(new Date().getFullYear());
 
     (async function loadCurrentJobStatus() {
@@ -585,37 +597,37 @@
     }
 
     uploadBtn.addEventListener('click', async () => {
-      const file = fileInput._file;
-      if (!file) {
-        return;
-      }
-
-      uploadBtn.disabled = true;
-      progressSec.style.display = 'block';
-      progressSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      clearJobDisplay();
-      setStatus('processing', false);
-
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('prefix', prefixInput.value.trim());
-      let tag = '';
-      if (publishCheck.checked) {
-        formData.append('publish_release', 'true');
-        const repo = document.getElementById('gh-repo-upload').value.trim();
-        tag = document.getElementById('gh-tag-upload').value.trim();
-        const name = document.getElementById('gh-name-upload').value.trim();
-        const body = document.getElementById('gh-body-upload').value.trim();
-        if (repo)  formData.append('github_repo', repo);
-        if (tag)   formData.append('release_tag', tag);
-        if (name)  formData.append('release_name', name);
-        if (body)  formData.append('release_body', body);
-      }
-      if (!tag) {
-        formData.delete('publish_release');
-      }
-
       try {
+        const file = fileInput._file;
+        if (!file) {
+          return;
+        }
+
+        uploadBtn.disabled = true;
+        progressSec.style.display = 'block';
+        progressSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        clearJobDisplay();
+        setStatus('processing', false);
+
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('prefix', prefixInput.value.trim());
+        let tag = '';
+        if (publishCheck.checked) {
+          formData.append('publish_release', 'true');
+          const repo = document.getElementById('gh-repo-upload').value.trim();
+          tag = document.getElementById('gh-tag-upload').value.trim();
+          const name = document.getElementById('gh-name-upload').value.trim();
+          const body = document.getElementById('gh-body-upload').value.trim();
+          if (repo)  formData.append('github_repo', repo);
+          if (tag)   formData.append('release_tag', tag);
+          if (name)  formData.append('release_name', name);
+          if (body)  formData.append('release_body', body);
+        }
+        if (!tag) {
+          formData.delete('publish_release');
+        }
+
         const resp = await fetch('/upload', { method: 'POST', body: formData });
         const data = await resp.json();
 
@@ -693,11 +705,20 @@
         const resp = await fetch(`/status/${currentJobId}?since=${lastLogCount}`);
         const data = await resp.json();
         if (!resp.ok) {
+          if (resp.status === 404) {
+            appendLog('ERROR: Job not found - the server may have restarted. Please upload the file again.', true);
+            setStatus('error', false);
+            clearPolling();
+          } else {
+            appendLog('ERROR: Status check failed (HTTP ' + resp.status + '): ' + (data.error || 'Unknown error'), true);
+            setStatus('error', false);
+            clearPolling();
+          }
           return;
         }
         renderJobState(currentJobId, data);
       } catch (err) {
-        console.warn('Polling error, will retry:', err);
+        appendLog('WARNING: Status poll failed (' + err + ') - retrying...');
       }
     }
 

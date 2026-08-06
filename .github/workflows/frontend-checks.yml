@@ -1,0 +1,35 @@
+name: Frontend checks
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Extract inline script from index.html
+        run: node scripts/extract-inline-script.js webserver/templates/index.html build/frontend-inline.js
+
+      - name: Syntax check (node --check)
+        run: node --check build/frontend-inline.js
+
+      - name: Lint (ESLint no-undef catches out-of-scope references)
+        run: npx eslint build/frontend-inline.js
+
+      - name: DOM smoke test (upload flow reaches /upload)
+        run: node scripts/upload-smoke-test.js

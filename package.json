@@ -1,0 +1,15 @@
+{
+  "name": "poaff-as-a-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frontend checks for the POAFF web interface",
+  "scripts": {
+    "extract:frontend": "node scripts/extract-inline-script.js webserver/templates/index.html build/frontend-inline.js",
+    "lint:frontend": "npm run extract:frontend && node --check build/frontend-inline.js && npx eslint build/frontend-inline.js",
+    "test:frontend": "node scripts/upload-smoke-test.js",
+    "check:frontend": "npm run lint:frontend && npm run test:frontend"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0"
+  }
+}
