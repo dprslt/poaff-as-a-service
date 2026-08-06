@@ -34,13 +34,25 @@ docker compose up --build
 
 Open **http://localhost:5000** in your browser.
 
-This starts the web image locally from `Dockerfile.web`. In CI, the same image is published as `dprslt/poaff-web`.
+This starts the web image locally from `Dockerfile.web`. In CI, the same image is published as `dprslt/poaff-web:main`.
+
+To run the published image instead of building locally:
+
+```bash
+docker compose pull
+docker compose up -d
+```
 
 **With plain Docker:**
 
 ```bash
-docker build -f Dockerfile.web -t dprslt/poaff-web .
-docker run --rm -p 5000:5000 dprslt/poaff-web
+# Build locally
+docker build -f Dockerfile.web -t dprslt/poaff-web:main .
+docker run --rm -p 5000:5000 dprslt/poaff-web:main
+
+# Or run the published image
+docker pull dprslt/poaff-web:main
+docker run --rm -p 5000:5000 dprslt/poaff-web:main
 ```
 
 ### Web Interface Workflow
