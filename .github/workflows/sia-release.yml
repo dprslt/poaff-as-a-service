@@ -1,0 +1,44 @@
+name: SIA release
+
+# Process a SIA AIXM delivery and publish the aip-MM-YY release, without the
+# web interface. Triggered by the hehol SIA ordering script once it has ordered
+# the new AIRAC product:
+#   gh workflow run sia-release.yml -R dprslt/poaff-as-a-service -f zip_url=<link>
+# The SIA download links work without a session, so the link is all it needs.
+
+on:
+  workflow_dispatch:
+    inputs:
+      zip_url:
+        description: 'SIA download link (https://www.sia.aviation-civile.gouv.fr/downloadable/download/link/id/...)'
+        required: true
+        type: string
+
+concurrency:
+  group: sia-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: write
+    # The processing image: POAFF code under /app, docker-entrypoint.py, and
+    # the Python deps (requests included) the CLI needs.
+    container: dprslt/poaff-web:main
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Process and publish
+        env:
+          ZIP_URL: ${{ inputs.zip_url }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+        run: |
+          case "$ZIP_URL" in
+            https://www.sia.aviation-civile.gouv.fr/*) ;;
+            *) echo "zip_url must be a www.sia.aviation-civile.gouv.fr link"; exit 1 ;;
+          esac
+          python webserver/publish_cli.py --zip-url "$ZIP_URL"

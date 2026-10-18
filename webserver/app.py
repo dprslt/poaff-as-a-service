@@ -16,12 +16,17 @@ import tempfile
 import threading
 import uuid
 import zipfile
-from datetime import date, datetime, timedelta
 from pathlib import Path
-from typing import Optional
 
 import requests
 from flask import Flask, abort, jsonify, render_template, request, send_file
+
+from poaff_release import (
+    collect_release_files,
+    create_github_release,
+    parse_airac_from_filename,
+    rename_output_files,
+)
 
 app = Flask(__name__)
 
@@ -61,16 +66,6 @@ current_job_lock = threading.Lock()
 JOBS_BASE_DIR = Path("/tmp/poaff_jobs")
 JOBS_BASE_DIR.mkdir(parents=True, exist_ok=True)
 
-# Files whose names match this pattern are included in GitHub releases,
-# mirroring the pattern from the aip-02-26 release assets.
-RELEASE_FILENAME_RE = re.compile(r".+@airspaces-.+\.(txt|geojson)$")
-
-# New SIA delivery zip format: export_xml_bd_sia_YYYY-MM-DD-vXX.zip
-# where YYYY-MM-DD is the AIRAC effective date.
-ZIP_FILENAME_RE = re.compile(
-    r"export_xml_bd_sia_(\d{4})-(\d{2})-(\d{2})-v(\d{2})\.zip$"
-)
-
 # Allowed characters for the release prefix
 PREFIX_RE = re.compile(r"^[a-zA-Z0-9_-]+$")
 ANSI_ESCAPE_RE = re.compile(r"\x1b\[[0-9;?]*[ -/]*[@-~]")
@@ -81,83 +76,6 @@ PROCESS_NICENESS = int(os.environ.get("POAFF_PROCESS_NICENESS", "10"))
 
 class ProcessingStopped(Exception):
     """Raised when a running job is stopped by user request."""
-
-
-# ---------------------------------------------------------------------------
-# AIRAC helpers
-# ---------------------------------------------------------------------------
-
-def _parse_airac_from_filename(filename: str) -> Optional[dict]:
-    """Extract AIRAC cycle info from a SIA delivery zip filename.
-
-    Expected filename format:
-        export_xml_bd_sia_YYYY-MM-DD-vXX.zip
-
-    Returns a dict with tag, name, body, dates, cycle number, etc., or None
-    if the filename does not match.
-    """
-    m = ZIP_FILENAME_RE.match(filename)
-    if not m:
-        return None
-
-    year, month, day, _version = int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4))
-    start_date = date(year, month, day)
-    end_date = start_date + timedelta(days=27)
-
-    # AIRAC cycles: 28-day cycles from epoch 1901-01-10
-    epoch = date(1901, 1, 10)
-    jan1 = date(year, 1, 1)
-    days_since_epoch = (jan1 - epoch).days
-    offset = days_since_epoch % 28
-    first_of_year = jan1 if offset == 0 else jan1 + timedelta(days=28 - offset)
-    delta_in_year = (start_date - first_of_year).days
-    cycle = (delta_in_year // 28) + 1
-    year_short = year % 100
-
-    tag = f"aip-{cycle:02d}-{year_short:02d}"
-    name = f"AIP {cycle:02d}/{year_short:02d}"
-    body = (
-        f"En vigueur du {start_date.strftime('%d/%m/%Y')} "
-        f"au {end_date.strftime('%d/%m/%Y')} inclus"
-    )
-
-    # Mark as latest if this cycle has not yet fully ended
-    is_latest = end_date >= date.today()
-
-    return {
-        "tag": tag,
-        "name": name,
-        "body": body,
-        "start_date": start_date,
-        "end_date": end_date,
-        "cycle": cycle,
-        "year_short": year_short,
-        "is_latest": is_latest,
-    }
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _collect_release_files(output_dir: Path) -> list:
-    """Return paths of files that should be uploaded to a GitHub release."""
-    results = []
-    poaff_dir = output_dir / "_POAFF"
-    search_root = poaff_dir if poaff_dir.exists() else output_dir
-    for p in sorted(search_root.rglob("*")):
-        if p.is_file() and RELEASE_FILENAME_RE.match(p.name):
-            results.append(p)
-    return results
-
-
-def _rename_output_files(output_dir: Path, prefix: str) -> None:
-    """Replace the 'global@' prefix with *prefix*@ in every output file."""
-    poaff_dir = output_dir / "_POAFF"
-    search_root = poaff_dir if poaff_dir.exists() else output_dir
-    for p in list(search_root.rglob("*")):
-        if p.is_file() and p.name.startswith("global@"):
-            p.rename(p.parent / p.name.replace("global@", f"{prefix}@", 1))
 
 
 def _normalize_log_line(line: str) -> str:
@@ -256,82 +174,6 @@ def _terminate_process(proc: subprocess.Popen) -> None:
         proc.terminate()
 
 
-def _create_github_release(
-    release_files: list,
-    github_token: str,
-    repo: str,
-    tag: str,
-    release_name: str,
-    release_body: str,
-    is_latest: bool = False,
-) -> dict:
-    """Create a GitHub release and upload airspace assets.
-
-    Returns a dict with 'release_url', 'uploaded', and 'failed' keys.
-    """
-    headers = {
-        "Authorization": f"token {github_token}",
-        "Accept": "application/vnd.github.v3+json",
-    }
-
-    payload = {
-        "tag_name": tag,
-        "name": release_name,
-        "body": release_body,
-    }
-    if is_latest:
-        payload["make_latest"] = "true"
-    else:
-        payload["make_latest"] = "false"
-
-    resp = requests.post(
-        f"https://api.github.com/repos/{repo}/releases",
-        json=payload,
-        headers=headers,
-        timeout=30,
-    )
-    if resp.status_code not in (200, 201):
-        return {"error": f"GitHub API error: {resp.text}"}
-
-    release_info = resp.json()
-    upload_url_base = (
-        f"https://uploads.github.com/repos/{repo}/releases/{release_info['id']}/assets"
-    )
-
-    uploaded = []
-    failed = []
-
-    for file_path in release_files:
-        content_type = {
-            ".geojson": "application/geo+json",
-            ".txt": "text/plain",
-            ".kml": "application/vnd.google-earth.kml+xml",
-        }.get(file_path.suffix.lower(), "application/octet-stream")
-
-        try:
-            with open(file_path, "rb") as fh:
-                up = requests.post(
-                    f"{upload_url_base}?name={file_path.name}",
-                    data=fh.read(),
-                    headers={**headers, "Content-Type": content_type},
-                    timeout=120,
-                )
-            if up.status_code in (200, 201):
-                uploaded.append(file_path.name)
-            else:
-                failed.append({"file": file_path.name, "error": up.text})
-        except Exception as exc:  # pylint: disable=broad-except
-            failed.append({"file": file_path.name, "error": str(exc)})
-
-    return {
-        "release_url": release_info["html_url"],
-        "uploaded_count": len(uploaded),
-        "failed_count": len(failed),
-        "uploaded": uploaded,
-        "failed": failed,
-    }
-
-
 # ---------------------------------------------------------------------------
 # Background processing
 # ---------------------------------------------------------------------------
@@ -414,7 +256,7 @@ def _run_processing(job_id: str, zip_path: Path, job_dir: Path, prefix: str) -> 
                 shutil.copytree(poaff_output, output_dir, dirs_exist_ok=True)
 
         if prefix and prefix != "global":
-            _rename_output_files(output_dir, prefix)
+            rename_output_files(output_dir, prefix)
             _append_job_log(job_id, f"Output files renamed with prefix '{prefix}'.")
 
         _append_job_log(job_id, "Processing completed successfully.")
@@ -479,8 +321,8 @@ def _run_processing(job_id: str, zip_path: Path, job_dir: Path, prefix: str) -> 
                     _append_job_log(job_id, f"WARNING: Could not check existing tags: {exc}")
 
                 if not already_exists:
-                    result = _create_github_release(
-                        release_files=_collect_release_files(output_dir),
+                    result = create_github_release(
+                        release_files=collect_release_files(output_dir),
                         github_token=gh_token,
                         repo=gh_repo,
                         tag=tag,
@@ -553,7 +395,7 @@ def upload():
     zip_path = job_dir / safe_filename
     file.save(zip_path)
 
-    airac_info = _parse_airac_from_filename(safe_filename)
+    airac_info = parse_airac_from_filename(safe_filename)
     if airac_info and not prefix:
         prefix = airac_info["tag"]
 
@@ -756,11 +598,11 @@ def create_release(job_id: str):
         return jsonify({"error": "Tag name is required (set via request body or derive from filename)."}), 400
 
     output_dir = job["job_dir"] / "output"
-    release_files = _collect_release_files(output_dir)
+    release_files = collect_release_files(output_dir)
     if not release_files:
         return jsonify({"error": "No release files found matching the airspace pattern."}), 400
 
-    result = _create_github_release(
+    result = create_github_release(
         release_files=release_files,
         github_token=github_token,
         repo=repo,
